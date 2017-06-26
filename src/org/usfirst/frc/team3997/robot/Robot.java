@@ -1,6 +1,8 @@
 package org.usfirst.frc.team3997.robot;
 
+import org.usfirst.frc.team3997.robot.auto.AutoRoutineRunner;
 import org.usfirst.frc.team3997.robot.controllers.DriveController;
+import org.usfirst.frc.team3997.robot.controllers.VisionController;
 import org.usfirst.frc.team3997.robot.hardware.ControlBoard;
 import org.usfirst.frc.team3997.robot.hardware.RemoteControl;
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
@@ -20,6 +22,9 @@ public class Robot extends IterativeRobot {
 	RobotModel robot = new RobotModel();
 	RemoteControl humanControl = new ControlBoard();
 	DriveController driveController = new DriveController(robot, humanControl);
+	VisionController visionController = new VisionController();
+	
+	MasterController masterController = new MasterController(driveController, robot, visionController);
 	
 	Timer timer = new Timer();
 
@@ -41,6 +46,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		AutoRoutineRunner.getTimer().reset();
+
 		timer.reset();
 		timer.start();
 	}
@@ -84,6 +91,8 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void disabledInit() {
+		AutoRoutineRunner.getTimer().reset();
+
 		if(humanControl.getArcadeDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = true;
 		} else if(humanControl.getTankDriveDesired()) {
@@ -92,6 +101,8 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledPeriodic() {
+		AutoRoutineRunner.getTimer().reset();
+
 		if(humanControl.getArcadeDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = true;
 		} else if(humanControl.getTankDriveDesired()) {
