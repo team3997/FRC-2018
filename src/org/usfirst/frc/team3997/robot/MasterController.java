@@ -7,12 +7,14 @@ import org.usfirst.frc.team3997.robot.hardware.*;
 public class MasterController {
 	private VisionController vision;
 	private DriveController driveTrain;
+	private LightController lights;
 	private RobotModel robot;
 	
-	public MasterController(DriveController driveTrain, RobotModel robot, VisionController vision) {
+	public MasterController(DriveController driveTrain, RobotModel robot, VisionController vision, LightController lights) {
 		this.vision = vision;
 		this.driveTrain = driveTrain;
 		this.robot = robot;
+		this.lights = lights;
 	}
 	
 	public VisionController getVisionController() {
@@ -25,5 +27,9 @@ public class MasterController {
 	
 	public DriveController getDriveController() {
 		return driveTrain;
+	}
+	
+	public LightController getLightController() {
+		return lights;
 	}
 }

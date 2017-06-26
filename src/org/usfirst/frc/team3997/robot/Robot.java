@@ -8,6 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team3997.robot.auto.Auto;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutineRunner;
 import org.usfirst.frc.team3997.robot.controllers.DriveController;
+import org.usfirst.frc.team3997.robot.controllers.LightController;
 import org.usfirst.frc.team3997.robot.controllers.VisionController;
 import org.usfirst.frc.team3997.robot.hardware.ControlBoard;
 import org.usfirst.frc.team3997.robot.hardware.RemoteControl;
@@ -36,7 +37,9 @@ public class Robot extends IterativeRobot {
 	RemoteControl humanControl = new ControlBoard();
 	DriveController driveController = new DriveController(robot, humanControl);
 	VisionController visionController = new VisionController();
-	MasterController masterController = new MasterController(driveController, robot, visionController);
+	LightController lights = new LightController();
+	MasterController masterController = new MasterController(driveController, robot, visionController, lights);
+
 	Auto auto = new Auto(masterController);
 	Timer timer = new Timer();
 
@@ -46,6 +49,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		lights.setEnabledLights();
 		auto.reset();
 		auto.listOptions();
 		if (humanControl.getArcadeDriveDesired()) {
@@ -82,14 +86,15 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		AutoRoutineRunner.getTimer().reset();
 		auto.stop();
+		
 		timer.reset();
 		timer.start();
-		auto.start();
+
 		currTimeSec = 0.0;
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
 		
-		
+		auto.start();
 	}
 
 	/**
@@ -98,6 +103,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		visionController.update();
+		lights.setAutoLights();
 	}
 
 	/**
@@ -128,6 +134,9 @@ public class Robot extends IterativeRobot {
 		humanControl.readControls();
 		driveController.update(currTimeSec, deltaTimeSec);
 		visionController.disable();
+		
+		lights.setEnabledLights();
+
 	}
 
 	/**
@@ -158,9 +167,9 @@ public class Robot extends IterativeRobot {
 		} else if (humanControl.getTankDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = false;
 		}
+		
+		lights.setDisabledLights();
 	}
 	
-	static void camera() {
-		
-	}
+	
 }
