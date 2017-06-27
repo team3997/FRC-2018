@@ -3,6 +3,7 @@ package org.usfirst.frc.team3997.robot.auto;
 import java.util.ArrayList;
 
 import org.usfirst.frc.team3997.robot.MasterController;
+import org.usfirst.frc.team3997.robot.auto.routines.CustomDistanceRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.DoNothingRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.DriveThreeSecRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.PassAutoLineRoutine;
@@ -22,6 +23,7 @@ public class AutoSelector {
 		registerAutonomous(new DriveThreeSecRoutine(controllers));
 		registerAutonomous(new PassAutoLineRoutine(controllers));
 		registerAutonomous(new TurnRoutine(controllers));
+		registerAutonomous(new CustomDistanceRoutine(controllers));
 	} 
 	
 	public void listOptions() {
@@ -31,6 +33,7 @@ public class AutoSelector {
 		autoChooser.addObject("Drive (3s)", 1);
 		autoChooser.addObject("Pass Auto Line and back (Drive 100, -100 inch)", 2);
 		autoChooser.addObject("Turn 90 degrees", 3);
+		autoChooser.addObject("Custom Routine (check preferences)", 4);
 		SmartDashboard.putData("Autonomous: ", autoChooser);
 	}
 	

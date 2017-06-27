@@ -7,6 +7,7 @@ public class RobotModel {
 	
 	public Spark leftDriveMotorA, leftDriveMotorB, rightDriveMotorA, rightDriveMotorB;
 	public Encoder leftDriveEncoder, rightDriveEncoder;
+	public AnalogGyro gyro;
 	public CameraServer camera;
 	public Timer timer;
 	
@@ -20,7 +21,10 @@ public class RobotModel {
 		leftDriveMotorB = new Spark(Ports.LEFT_DRIVE_MOTOR_B_PWM_PORT);
 		rightDriveMotorA = new Spark(Ports.RIGHT_DRIVE_MOTOR_A_PWM_PORT);
 		rightDriveMotorB = new Spark(Ports.RIGHT_DRIVE_MOTOR_B_PWM_PORT);
-	
+		//TODO add real input channel
+		//gyro = new AnalogGyro(channel);
+		gyro.reset();
+		
 		leftDriveEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER_PORTS[0], Ports.LEFT_DRIVE_ENCODER_PORTS[1]);
 		rightDriveEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCODER_PORTS[0], Ports.RIGHT_DRIVE_ENCODER_PORTS[1]);
 	
@@ -140,7 +144,9 @@ public class RobotModel {
 	public void resetTimer() {
 		timer.reset();
 	}
-	
+	public double getTimestamp() {
+		return timer.getFPGATimestamp();
+	}
 	//returns the time
 	public double getTime() {
 		return timer.get();
@@ -156,5 +162,11 @@ public class RobotModel {
 		return leftDriveEncoder.getDistance() - rightDriveEncoder.getDistance();
 	}
 
+	public void resetGyro() {
+		gyro.reset();
+	}
 	
+	public double getAngle() {
+		return gyro.getAngle();
+	}
 }

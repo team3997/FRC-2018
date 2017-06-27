@@ -10,6 +10,8 @@ import org.usfirst.frc.team3997.robot.auto.AutoRoutineRunner;
 import org.usfirst.frc.team3997.robot.controllers.DriveController;
 import org.usfirst.frc.team3997.robot.controllers.LightController;
 import org.usfirst.frc.team3997.robot.controllers.VisionController;
+import org.usfirst.frc.team3997.robot.feed.DashboardInput;
+import org.usfirst.frc.team3997.robot.feed.DashboardLogger;
 import org.usfirst.frc.team3997.robot.hardware.ControlBoard;
 import org.usfirst.frc.team3997.robot.hardware.RemoteControl;
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
@@ -33,11 +35,15 @@ public class Robot extends IterativeRobot {
 	double currTimeSec = 0;
 	double lastTimeSec = 0;
 	double deltaTimeSec = 0;
+	
 	RobotModel robot = new RobotModel();
 	RemoteControl humanControl = new ControlBoard();
 	DriveController driveController = new DriveController(robot, humanControl);
 	VisionController visionController = new VisionController();
 	LightController lights = new LightController();
+	DashboardLogger dashboardLogger = new DashboardLogger(robot, humanControl);
+	DashboardInput input = new DashboardInput();
+	
 	MasterController masterController = new MasterController(driveController, robot, visionController, lights);
 
 	Auto auto = new Auto(masterController);
@@ -52,6 +58,9 @@ public class Robot extends IterativeRobot {
 		lights.setEnabledLights();
 		auto.reset();
 		auto.listOptions();
+		
+		input.updateInput();
+		
 		if (humanControl.getArcadeDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = true;
 		} else if (humanControl.getTankDriveDesired()) {
@@ -104,6 +113,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		visionController.update();
 		lights.setAutoLights();
+		dashboardLogger.updateData();
 	}
 
 	/**
@@ -128,6 +138,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		dashboardLogger.updateData();
 		lastTimeSec = currTimeSec;
 		currTimeSec = robot.getTime();
 		deltaTimeSec = currTimeSec - lastTimeSec;
@@ -145,6 +156,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		LiveWindow.run();
+		input.updateInput();
+
 	}
 
 	public void disabledInit() {
@@ -156,9 +169,14 @@ public class Robot extends IterativeRobot {
 		} else if (humanControl.getTankDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = false;
 		}
+		input.updateInput();
+
 	}
 
 	public void disabledPeriodic() {
+		input.updateInput();
+		dashboardLogger.updateData();
+
 		AutoRoutineRunner.getTimer().reset();
 		humanControl.readControls();
 		visionController.update();
