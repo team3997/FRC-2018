@@ -9,6 +9,7 @@ import org.usfirst.frc.team3997.robot.auto.Auto;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutineRunner;
 import org.usfirst.frc.team3997.robot.controllers.DriveController;
 import org.usfirst.frc.team3997.robot.controllers.LightController;
+import org.usfirst.frc.team3997.robot.controllers.MotionController;
 import org.usfirst.frc.team3997.robot.controllers.VisionController;
 import org.usfirst.frc.team3997.robot.feed.DashboardInput;
 import org.usfirst.frc.team3997.robot.feed.DashboardLogger;
@@ -43,8 +44,9 @@ public class Robot extends IterativeRobot {
 	LightController lights = new LightController();
 	DashboardLogger dashboardLogger = new DashboardLogger(robot, humanControl);
 	DashboardInput input = new DashboardInput();
+	MotionController motion = new MotionController(robot);
 	
-	MasterController masterController = new MasterController(driveController, robot, visionController, lights);
+	MasterController masterController = new MasterController(driveController, robot, visionController, motion, lights);
 
 	Auto auto = new Auto(masterController);
 	Timer timer = new Timer();

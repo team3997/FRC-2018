@@ -169,4 +169,15 @@ public class RobotModel {
 	public double getAngle() {
 		return gyro.getAngle();
 	}
+	
+	public void setLeftMotors(double output) {
+		leftDriveMotorA.set(output);
+		leftDriveMotorB.set(output);
+
+	}
+	
+	public void setRightMotors(double output) {
+		rightDriveMotorA.set(output);
+		rightDriveMotorB.set(output);
+	}
 }
