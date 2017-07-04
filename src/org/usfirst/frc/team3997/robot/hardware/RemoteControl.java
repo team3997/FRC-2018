@@ -25,4 +25,12 @@ public abstract class RemoteControl {
 	public abstract boolean getDriveBackDesired();
 
 	public abstract boolean getDriveBackOtherDesired();
+	
+	public abstract boolean getGearTilterDownDesired();
+	public abstract boolean getGearTilterUpDesired();
+	public abstract boolean getGearTilterRampDesired();
+	public abstract boolean getGearWheelOuttakeDesired();
+	public abstract boolean getGearWheelIntakeDesired();
+	public abstract boolean getGearIntakeDesired();
+	public abstract boolean getManualGearDesired();
 }

@@ -9,12 +9,14 @@ public class MasterController {
 	private DriveController driveTrain;
 	private LightController lights;
 	private RobotModel robot;
+	private GearController gearController;
 	
-	public MasterController(DriveController driveTrain, RobotModel robot, VisionController vision, LightController lights) {
+	public MasterController(DriveController driveTrain, RobotModel robot, GearController gearController, VisionController vision, LightController lights) {
 		this.vision = vision;
 		this.driveTrain = driveTrain;
 		this.robot = robot;
 		this.lights = lights;
+		this.gearController = gearController;
 	}
 	
 	public VisionController getVisionController() {
@@ -31,5 +33,9 @@ public class MasterController {
 	
 	public LightController getLightController() {
 		return lights;
+	}
+	
+	public GearController getGearController() {
+		return gearController;
 	}
 }

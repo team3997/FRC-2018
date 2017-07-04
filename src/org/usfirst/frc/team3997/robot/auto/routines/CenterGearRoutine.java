@@ -3,9 +3,10 @@ package org.usfirst.frc.team3997.robot.auto.routines;
 import org.usfirst.frc.team3997.robot.MasterController;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutine;
 
-public class PassAutoLineRoutine extends AutoRoutine {
+public class CenterGearRoutine extends AutoRoutine {
 	private MasterController controllers;
-	public PassAutoLineRoutine(MasterController controllers) {
+
+	public CenterGearRoutine(MasterController controllers) {
 		this.controllers = controllers;
 	}
 
@@ -17,6 +18,10 @@ public class PassAutoLineRoutine extends AutoRoutine {
 
 	@Override
 	protected void routine() {
-		driveDistanceStraight(controllers, 100, .8, 4.0, false);
+		controllers.getGearController().gearPIDUp();
+		arcadeDistanceStraight(controllers, 75.0, 0.5, 4.0, 0.4);
+		controllers.getGearController().gearDown();
+		driveDistanceStraight(controllers, -5.0, .7, 1.5, true);
 	}
+
 }
