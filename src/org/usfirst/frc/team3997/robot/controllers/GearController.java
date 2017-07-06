@@ -1,7 +1,6 @@
 package org.usfirst.frc.team3997.robot.controllers;
 
 import org.usfirst.frc.team3997.robot.Params;
-import org.usfirst.frc.team3997.robot.hardware.Ports;
 import org.usfirst.frc.team3997.robot.hardware.RemoteControl;
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
 import org.usfirst.frc.team3997.robot.pid.AnalogPIDOutput;

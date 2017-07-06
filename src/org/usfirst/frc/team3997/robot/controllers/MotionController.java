@@ -15,10 +15,10 @@ public class MotionController {
 	public TankModifier modifier;
 	public EncoderFollower left;
 	public EncoderFollower right;
-
+	private boolean isEnabled;
 	public MotionController(RobotModel robot) {
 		this.robot = robot;
-
+		isEnabled = false;
 	}
 
 	public void setUp(Waypoint[] points) {
@@ -33,35 +33,40 @@ public class MotionController {
 		right = new EncoderFollower(modifier.getRightTrajectory());
 	}
 
-	// TODO Put this in control loop
 	public void enable() {
 		// TODO get max velocity
 		// TODO find ticks_per_revolution
 		// .1016 meters = 4 inch wheel diameter
+		isEnabled = true;
 		robot.resetGyro();
 		left.configureEncoder(robot.leftDriveEncoder.get(), 100, .1016);
 		right.configureEncoder(robot.rightDriveEncoder.get(), 100, .1016);
 		left.configurePIDVA(1.0, 0.0, 0.0, (1 / Params.maximum_velocity), 0);
 		right.configurePIDVA(1.0, 0.0, 0.0, (1 / Params.maximum_velocity), 0);
 
-		double l = left.calculate(robot.leftDriveEncoder.get());
 		right.configureEncoder(robot.leftDriveEncoder.get(), 100, .1016);
 		right.configureEncoder(robot.rightDriveEncoder.get(), 100, .1016);
 		right.configurePIDVA(1.0, 0.0, 0.0, (1 / Params.maximum_velocity), 0);
 		right.configurePIDVA(1.0, 0.0, 0.0, (1 / Params.maximum_velocity), 0);
-
-		double r = left.calculate(robot.rightDriveEncoder.get());
-		double gyro_heading = robot.getAngle();
-		double desired_heading = Pathfinder.r2d(left.getHeading());
-
-		double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
-		double turn = 0.8 * (-1.0 / 80) * angleDifference;
-
-		robot.setLeftMotors(l + turn);
-		robot.setRightMotors(r - turn);
+		
 	}
-
+	// TODO Put this in control loop
+	public void update() {
+		if(isEnabled) {
+			double l = left.calculate(robot.leftDriveEncoder.get());
+			double r = left.calculate(robot.rightDriveEncoder.get());
+			
+			double gyro_heading = robot.getAngle();
+			double desired_heading = Pathfinder.r2d(left.getHeading());
+			double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
+			double turn = 0.8 * (-1.0 / 80) * angleDifference;
+	
+			robot.setLeftMotors(l + turn);
+			robot.setRightMotors(r - turn);
+		}
+	}
 	public void disable() {
+		isEnabled = false;
 		robot.setLeftMotors(0);
 		robot.setRightMotors(0);
 	}

@@ -14,18 +14,23 @@ public class LeftGearRoutine extends AutoRoutine {
 
 	@Override
 	public void prestart() {
-		//TODO add real values
-		controllers.getMotionController().setUp(new Waypoint[] {
-			    new Waypoint(-4, -1, Pathfinder.d2r(70)),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
-			    new Waypoint(-2, -2, 0),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
-			    new Waypoint(0, 0, 0)                           // Waypoint @ x=0, y=0,   exit angle=0 radians
-			});		
-		controllers.getRobotModel().resetGyro();
+		
 	}
 
 	@Override
 	protected void routine() {
-		controllers.getGearController().gearPIDUp();
+		
+		/*pathFollower(controllers, new Waypoint[] {
+			    new Waypoint(0, 98, Pathfinder.d2r(70)),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
+			    new Waypoint(15, 2, 70)                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
+			                               // Waypoint @ x=0, y=0,   exit angle=0 radians
+			}, 6.0);
+			
+			*
+			*
+			*
+			*/
+
 		arcadeDistanceStraight(controllers, 98.0, 0.6, 4.0, 0.4);
 		driveRotate(controllers, 70, 0.6, 1.6, true);
 		arcadeDistanceStraight(controllers, 25.0, 0.6, 4, 0.4);

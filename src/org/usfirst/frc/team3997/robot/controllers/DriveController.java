@@ -6,7 +6,6 @@ import org.usfirst.frc.team3997.robot.hardware.RobotModel;
 import org.usfirst.frc.team3997.robot.pid.ArcadeStraightPIDOutput;
 import org.usfirst.frc.team3997.robot.pid.DriveEncodersPIDSource;
 import org.usfirst.frc.team3997.robot.pid.WheelsPIDOutput;
-import org.usfirst.frc.team3997.robot.hardware.*;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -94,14 +93,10 @@ public class DriveController {
 			nextState = DriveState.kTeleopDrive;
 			break;
 		case kTeleopDrive:
-			double driverLeftX;
-			driverLeftX = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kLX);
-			double driverLeftY;
-			driverLeftY = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kLY);
-			double driverRightX;
-			driverRightX = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kRX);
-			double driverRightY;
-			driverRightY = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kRY);
+			double driverLeftX = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kLX);
+			double driverLeftY = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kLY);
+			double driverRightX = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kRX);
+			double driverRightY = humanControl.getJoystickValue(RemoteControl.Joysticks.kDriverJoy, RemoteControl.Axes.kRY);
 
 			if (leftPID.isEnabled() || rightPID.isEnabled()) {
 				leftPID.disable();
