@@ -2,6 +2,7 @@ package org.usfirst.frc.team3997.robot.controllers;
 
 import org.usfirst.frc.team3997.robot.hardware.RemoteControl;
 import org.usfirst.frc.team3997.robot.hardware.RemoteControl.Joysticks;
+
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
 
 public class ClimberController {

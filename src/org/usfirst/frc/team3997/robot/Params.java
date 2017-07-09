@@ -92,4 +92,12 @@ public class Params {
 	public static final double s_high = 255;
 	public static final double v_low = 0;
 	public static final double v_high = 255;
+
+	
+	//[MOTION PROFILING] meters
+	public static final double wheel_diameter = 4;
+	public static final double maximum_velocity = 1; //TODO add maximum velocity in inches/s
+	public static final double maximum_acceleration = 1; //TODO add maximum velocity in inches/s/s
+	public static final double maximum_jerk = 1; //TODO add maximum velocity in a/s
+
 }

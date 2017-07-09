@@ -6,10 +6,13 @@ import org.usfirst.frc.team3997.robot.auto.actions.ArcadeStraightAction;
 import org.usfirst.frc.team3997.robot.auto.actions.DriveDistanceAction;
 import org.usfirst.frc.team3997.robot.auto.actions.DriveIntervalAction;
 import org.usfirst.frc.team3997.robot.auto.actions.DriveRotateAction;
+
+import org.usfirst.frc.team3997.robot.auto.actions.PathFollowerAction;
 import org.usfirst.frc.team3997.robot.auto.actions.VisionAction;
 import org.usfirst.frc.team3997.robot.auto.actions.WaitAction;
 
 import edu.wpi.first.wpilibj.RobotState;
+import jaci.pathfinder.Waypoint;
 
 public abstract class AutoRoutine {
 	public boolean m_active = false;
@@ -39,6 +42,10 @@ public abstract class AutoRoutine {
 	public void arcadeDistanceStraight(MasterController controllers,
 			double distance, double maxSpeed, double timeout, double timeAfterHit) {
 		runAction(new ArcadeStraightAction(controllers, distance, maxSpeed, timeout, timeAfterHit));
+	}
+	
+	public void pathFollower(MasterController controllers, Waypoint points[], double timeout) {
+		runAction(new PathFollowerAction(controllers, points, timeout));
 	}
 	
 	public void waitTime(double seconds) {

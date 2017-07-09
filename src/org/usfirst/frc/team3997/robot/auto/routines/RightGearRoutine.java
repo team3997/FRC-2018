@@ -3,6 +3,10 @@ package org.usfirst.frc.team3997.robot.auto.routines;
 import org.usfirst.frc.team3997.robot.MasterController;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutine;
 
+
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.Waypoint;
+
 public class RightGearRoutine extends AutoRoutine {
 	private MasterController controllers;
 
@@ -12,8 +16,7 @@ public class RightGearRoutine extends AutoRoutine {
 
 	@Override
 	public void prestart() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -27,6 +30,7 @@ public class RightGearRoutine extends AutoRoutine {
 		driveDistanceStraight(controllers, -15.0, .95, 2, true);
 		driveRotate(controllers, 70, 0.6, 1.6, true);
 		arcadeDistanceStraight(controllers, 75.0, .95, 4.0, 0.4);
+		//TODO controllers.getMotionController().enable();
 	}
 
 }

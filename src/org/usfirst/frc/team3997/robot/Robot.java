@@ -1,5 +1,4 @@
 package org.usfirst.frc.team3997.robot;
-
 import org.opencv.core.*;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -11,6 +10,7 @@ import org.usfirst.frc.team3997.robot.controllers.ClimberController;
 import org.usfirst.frc.team3997.robot.controllers.DriveController;
 import org.usfirst.frc.team3997.robot.controllers.GearController;
 import org.usfirst.frc.team3997.robot.controllers.LightController;
+import org.usfirst.frc.team3997.robot.controllers.MotionController;
 import org.usfirst.frc.team3997.robot.controllers.VisionController;
 import org.usfirst.frc.team3997.robot.feed.DashboardInput;
 import org.usfirst.frc.team3997.robot.feed.DashboardLogger;
@@ -45,10 +45,12 @@ public class Robot extends IterativeRobot {
 	LightController lights = new LightController();
 	DashboardLogger dashboardLogger = new DashboardLogger(robot, humanControl);
 	DashboardInput input = new DashboardInput();
+
+	MotionController motion = new MotionController(robot);
 	GearController gearController = new GearController(robot, humanControl);
 	ClimberController climberController = new ClimberController(robot, humanControl);
 	
-	MasterController masterController = new MasterController(driveController, robot, gearController, visionController, lights);
+	MasterController masterController = new MasterController(driveController, robot, gearController, motion, visionController, lights);
 
 	Auto auto = new Auto(masterController);
 	Timer timer = new Timer();
