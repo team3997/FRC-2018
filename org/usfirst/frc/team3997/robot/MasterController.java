@@ -2,14 +2,13 @@ package org.usfirst.frc.team3997.robot;
 import org.usfirst.frc.team3997.robot.controllers.*;
 import org.usfirst.frc.team3997.robot.hardware.*;
 
-
-
 public class MasterController {
 	private VisionController vision;
 	private DriveController driveTrain;
 	private LightController lights;
 	private RobotModel robot;
 	private MotionController motion;
+
 	private GearController gearController;
 	
 	public MasterController(DriveController driveTrain, RobotModel robot, GearController gearController, MotionController motion, VisionController vision, LightController lights) {
@@ -40,8 +39,7 @@ public class MasterController {
 	public MotionController getMotionController() {
 		return motion;
 	}
-	
-	
+		
 	public GearController getGearController() {
 		return gearController;
 	}

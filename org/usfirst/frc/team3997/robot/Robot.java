@@ -1,5 +1,5 @@
 package org.usfirst.frc.team3997.robot;
-
+import org.opencv.core.*;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;

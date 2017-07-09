@@ -21,7 +21,7 @@ public class PathFollowerAction extends Action{
 	}
 	@Override
 	public boolean isFinished() {
-		return (motion.left.isFinished()) && (motion.right.isFinished()) || (Timer.getFPGATimestamp() >= start_time + timeout);
+		return ((motion.left.isFinished()) && (motion.right.isFinished())) || (Timer.getFPGATimestamp() >= start_time + timeout);
 	}
 
 	@Override
