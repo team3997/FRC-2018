@@ -1,4 +1,5 @@
 package org.usfirst.frc.team3997.robot;
+
 import org.opencv.core.*;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -37,22 +38,23 @@ public class Robot extends IterativeRobot {
 	double currTimeSec = 0;
 	double lastTimeSec = 0;
 	double deltaTimeSec = 0;
-	
-	RobotModel robot = new RobotModel();
-	RemoteControl humanControl = new ControlBoard();
-	DriveController driveController = new DriveController(robot, humanControl);
-	VisionController visionController = new VisionController();
-	LightController lights = new LightController();
-	DashboardLogger dashboardLogger = new DashboardLogger(robot, humanControl);
-	DashboardInput input = new DashboardInput();
-	MotionController motion = new MotionController(robot);
-	GearController gearController = new GearController(robot, humanControl);
-	ClimberController climberController = new ClimberController(robot, humanControl);
-	
-	MasterController masterController = new MasterController(driveController, robot, gearController, motion, visionController, lights);
 
-	Auto auto = new Auto(masterController);
-	Timer timer = new Timer();
+	RobotModel robot;
+	RemoteControl humanControl;
+	DriveController driveController;
+	VisionController visionController;
+	LightController lights;
+	DashboardLogger dashboardLogger;
+	DashboardInput input;
+
+	MotionController motion;
+	GearController gearController;
+	ClimberController climberController;
+
+	MasterController masterController;
+
+	Auto auto;
+	Timer timer;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -60,12 +62,28 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		robot = new RobotModel();
+		humanControl = new ControlBoard();
+		driveController = new DriveController(robot, humanControl);
+		visionController = new VisionController();
+		lights = new LightController();
+		dashboardLogger = new DashboardLogger(robot, humanControl);
+		input = new DashboardInput();
+		motion = new MotionController(robot);
+		gearController = new GearController(robot, humanControl);
+		climberController = new ClimberController(robot, humanControl);
+		masterController = new MasterController(driveController, robot, gearController, motion, visionController,
+				lights);
+		auto = new Auto(masterController);
+		timer = new Timer();
+		
+		
 		lights.setEnabledLights();
 		auto.reset();
 		auto.listOptions();
-		
+
 		input.updateInput();
-		
+
 		if (humanControl.getArcadeDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = true;
 		} else if (humanControl.getTankDriveDesired()) {
@@ -75,21 +93,22 @@ public class Robot extends IterativeRobot {
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
 		new Thread(() -> {
-            UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-            camera.setResolution(640, 480);
-            
-            CvSink cvSink = CameraServer.getInstance().getVideo();
-            CvSource outputStream = CameraServer.getInstance().putVideo("Line", 640, 480);
-            
-            Mat output = new Mat();
-            
-            while(!Thread.interrupted()) {
-                cvSink.grabFrame(output);
-                int thickness = 2;
-                Imgproc.line(output, new Point((output.size().width / 2), 0), new Point((output.size().width / 2), (output.size().height)), new Scalar(0, 0, 0), thickness);
-                outputStream.putFrame(output);
-            }
-        }).start();
+			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+			camera.setResolution(640, 480);
+
+			CvSink cvSink = CameraServer.getInstance().getVideo();
+			CvSource outputStream = CameraServer.getInstance().putVideo("Line", 640, 480);
+
+			Mat output = new Mat();
+
+			while (!Thread.interrupted()) {
+				cvSink.grabFrame(output);
+				int thickness = 2;
+				Imgproc.line(output, new Point((output.size().width / 2), 0),
+						new Point((output.size().width / 2), (output.size().height)), new Scalar(0, 0, 0), thickness);
+				outputStream.putFrame(output);
+			}
+		}).start();
 
 	}
 
@@ -100,14 +119,14 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		AutoRoutineRunner.getTimer().reset();
 		auto.stop();
-		
+
 		timer.reset();
 		timer.start();
 
 		currTimeSec = 0.0;
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
-		
+
 		auto.start();
 	}
 
@@ -163,7 +182,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		LiveWindow.run();
-		//Drive Train
+		// Drive Train
 		LiveWindow.addActuator("Drive Train", "Front Left Motor", robot.leftDriveMotorA);
 		LiveWindow.addActuator("Drive Train", "Back Left Motor", robot.leftDriveMotorB);
 		LiveWindow.addActuator("Drive Train", "Front Right Motor", robot.rightDriveMotorA);
@@ -200,9 +219,8 @@ public class Robot extends IterativeRobot {
 		} else if (humanControl.getTankDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = false;
 		}
-		
+
 		lights.setDisabledLights();
 	}
-	
-	
+
 }
