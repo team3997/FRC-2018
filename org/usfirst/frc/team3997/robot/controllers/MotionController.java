@@ -1,5 +1,7 @@
 package org.usfirst.frc.team3997.robot.controllers;
 
+import java.io.File;
+
 import org.usfirst.frc.team3997.robot.Params;
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
 
@@ -32,6 +34,16 @@ public class MotionController {
 		left = new EncoderFollower(modifier.getLeftTrajectory());
 		right = new EncoderFollower(modifier.getRightTrajectory());
 	}
+	public void setUp(File trajectoryCSV) {
+		
+		trajectory = Pathfinder.readFromCSV(trajectoryCSV);
+
+		// TODO find distance between front and rear axles of a vehicle
+		modifier = new TankModifier(trajectory).modify(0.5);
+		left = new EncoderFollower(modifier.getLeftTrajectory());
+		right = new EncoderFollower(modifier.getRightTrajectory());
+	}
+
 
 	public void enable() {
 		// TODO get max velocity
