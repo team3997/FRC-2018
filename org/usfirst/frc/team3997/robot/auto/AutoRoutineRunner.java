@@ -10,12 +10,17 @@ public class AutoRoutineRunner {
 	private Thread routine_thread;
 
 	public void setAutoRoutine(AutoRoutine new_auto_routine) {
+		autoTimer.reset();
 		autoStarted = false;
 		this.new_auto_routine = new_auto_routine;
 		routine_thread = null;
+		SmartDashboard.putString("settingAutoRoutine", "SETTING");
+
 	}
 
 	public void start() {
+		SmartDashboard.putString("settingAutoRoutine", "STARTING");
+
 		if(routine_thread == null) {
 			routine_thread  = new Thread(new Runnable() {
 				
@@ -25,10 +30,14 @@ public class AutoRoutineRunner {
 						autoStarted = true;
 						SmartDashboard.putString("ThreadSTATE", "startedThread");
 						if(new_auto_routine != null) {
+							SmartDashboard.putString("settingAutoRoutine", "RUNNING");
 							new_auto_routine.run();
 						}
 				}
 			});
+			routine_thread.start();
+		} else {
+			SmartDashboard.putString("settingAutoRoutine", "NULL");
 		}
 	}
 	
@@ -36,6 +45,8 @@ public class AutoRoutineRunner {
 		if(!autoStarted) {
 			return;
 		} 
+		//Stopping for multiple stops
+		autoStarted = false;
 		if(new_auto_routine != null) {
 			new_auto_routine.stop();
 		}

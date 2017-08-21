@@ -28,7 +28,7 @@ public class ArcadeStraightAction extends Action{
 		this.robot = controllers.getRobotModel();
 		this.maxSpeed = maxSpeed;
 		this.timeAfterHit = timeAfterHit;
-		
+		start_time = 0;
 		reachedSetpoint = false;
 		leftEncoderStartDistance = 0.0; 
 		rightEncoderStartDistance = 0.0;
