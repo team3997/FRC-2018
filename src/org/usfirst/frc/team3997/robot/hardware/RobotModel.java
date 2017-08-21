@@ -11,9 +11,8 @@ public class RobotModel {
 	public VictorSP climberMotor;
 	public Talon gearTilterMotor, gearIntakeMotor;
 	public Encoder leftDriveEncoder, rightDriveEncoder;
-	public AnalogGyro gyro;
 	public Potentiometer gearPot;
-	public CameraServer camera;
+	//public CameraServer camera;
 	public Timer timer;
 
 	private PowerDistributionPanel pdp;
@@ -33,7 +32,6 @@ public class RobotModel {
 		gearPot = new AnalogPotentiometer(Ports.GEAR_POT);
 		// TODO add real input channel
 		// gyro = new AnalogGyro(channel);
-		gyro.reset();
 
 		leftDriveEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER_PORTS[0], Ports.LEFT_DRIVE_ENCODER_PORTS[1]);
 		rightDriveEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCODER_PORTS[0], Ports.RIGHT_DRIVE_ENCODER_PORTS[1]);
@@ -63,7 +61,7 @@ public class RobotModel {
 		timer = new Timer();
 		timer.start();
 		// TODO add real url
-		camera.addServer("Server");
+		//camera.addServer("Server");
 
 	}
 
@@ -181,11 +179,10 @@ public class RobotModel {
 	}
 
 	public void resetGyro() {
-		gyro.reset();
 	}
 
 	public double getAngle() {
-		return gyro.getAngle();
+		return 0;
 	}
 
 	public void setLeftMotors(double output) {

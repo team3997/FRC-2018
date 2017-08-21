@@ -19,10 +19,13 @@ public class AutoSelector {
 
 	SendableChooser<Integer> autoChooser;
 	private ArrayList<AutoRoutine> autoRoutines;
-	int selectedIndex = 0;
+	int selectedIndex;
 	
 	public AutoSelector(MasterController controllers) {
+		selectedIndex = 0;
+		autoRoutines = new ArrayList<AutoRoutine>();
 		//REMEMBER ORDER SAME ORDER AS LIST OPTIONS!!!
+		//
 		registerAutonomous(new DoNothingRoutine());
 		registerAutonomous(new DriveThreeSecRoutine(controllers));
 		registerAutonomous(new PassAutoLineRoutine(controllers));
@@ -54,6 +57,7 @@ public class AutoSelector {
 	}
 	
 	public void registerAutonomous(AutoRoutine auto) {
+		//
 		autoRoutines.add(auto);
 	}
 	

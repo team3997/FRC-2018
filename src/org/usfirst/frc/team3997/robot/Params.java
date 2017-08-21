@@ -1,5 +1,7 @@
 package org.usfirst.frc.team3997.robot;
 
+import org.usfirst.frc.team3997.robot.feed.DashboardVariables;
+
 public class Params {
 
 	// Params.h: Preferences for the robot
@@ -67,18 +69,18 @@ public class Params {
 	public static final double drive_d = 0.05;
 
 	// [NEW_DRIVE_PID]
-	public static final double new_drive_p = 0.4;
-	public static final double new_drive_i = 0.0;
-	public static final double new_drive_d = 0.1;
+	public static final double new_drive_p = DashboardVariables.DRIVE_P;
+	public static final double new_drive_i = DashboardVariables.DRIVE_I;
+	public static final double new_drive_d = DashboardVariables.DRIVE_D;
 
 	// [GEAR_PID]
-	public static final double gear_p = 12.5;
-	public static final double gear_i = 0.000;
-	public static final double gear_d = 9.0;
+	public static final double gear_p = DashboardVariables.GEAR_P;
+	public static final double gear_i = DashboardVariables.GEAR_I;
+	public static final double gear_d = DashboardVariables.GEAR_D;
 
-	public static final double gear_ramp_p = 12.5;
-	public static final double gear_ramp_i = 0.000;
-	public static final double gear_ramp_d = 2.5;
+	public static final double gear_ramp_p = DashboardVariables.GEAR_RAMP_P;
+	public static final double gear_ramp_i = DashboardVariables.GEAR_RAMP_I;
+	public static final double gear_ramp_d = DashboardVariables.GEAR_RAMP_D;
 
 	// [GEAR_DOWN_PID]
 	public static final double gear_down_p = 0.0;

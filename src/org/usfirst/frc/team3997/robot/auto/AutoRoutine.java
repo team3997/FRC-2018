@@ -68,7 +68,7 @@ public abstract class AutoRoutine {
 	public void runAction(Action action) {
 		action.start();
 		//TODO maybe add timer test this first
-		while((isActive()) && (!action.isFinished()) && (AutoRoutineRunner.getTimer().get() <= 15) && RobotState.isAutonomous() && !RobotState.isDisabled()) {
+		while((isActive()) && !(action.isFinished()) && (AutoRoutineRunner.getTimer().get() <= 15) && RobotState.isAutonomous() && !RobotState.isDisabled()) {
 			action.update();
 		}
 		action.finish();
