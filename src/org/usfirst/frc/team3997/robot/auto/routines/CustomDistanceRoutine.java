@@ -17,7 +17,7 @@ public class CustomDistanceRoutine extends AutoRoutine {
 
 	@Override
 	protected void routine() {
-		controllers.getGearController().gearRest();
+		controllers.getGearController().gearPIDUp();
 		/*arcadeDistanceStraight(controllers, DashboardVariables.firstAutoDistance, .8, DashboardVariables.firstAutoDistanceTimeout, .4);
 		driveRotate(controllers, DashboardVariables.nextAutoAngle, .5, DashboardVariables.nextAutoAngleTimeout, false);*/
 		if(DashboardVariables.gearDown) {
