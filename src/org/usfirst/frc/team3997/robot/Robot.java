@@ -45,9 +45,9 @@ public class Robot extends IterativeRobot {
 	ClimberController climberController = new ClimberController(robot, humanControl);
 	
 	MasterController masterController = new MasterController(driveController, robot, gearController, motion, visionController, lights);
-	Action driveAuto = new DriveIntervalAction(masterController, 3, 1, 0);
 	Auto auto = new Auto(masterController);
 	Timer timer = new Timer();
+
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -55,12 +55,28 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		robot = new RobotModel();
+		humanControl = new ControlBoard();
+		driveController = new DriveController(robot, humanControl);
+		visionController = new VisionController();
+		lights = new LightController();
+		dashboardLogger = new DashboardLogger(robot, humanControl);
+		input = new DashboardInput();
+		motion = new MotionController(robot);
+		gearController = new GearController(robot, humanControl);
+		climberController = new ClimberController(robot, humanControl);
+		masterController = new MasterController(driveController, robot, gearController, motion, visionController,
+				lights);
+		auto = new Auto(masterController);
+		timer = new Timer();
+		
+		
 		lights.setEnabledLights();
 		auto.reset();
 		auto.listOptions();
-		
+
 		input.updateInput();
-		
+
 		if (humanControl.getArcadeDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = true;
 		} else if (humanControl.getTankDriveDesired()) {
@@ -96,14 +112,14 @@ public class Robot extends IterativeRobot {
 		AutoRoutineRunner.getTimer().reset();
 		input.updateInput();
 		auto.stop();
-		
+
 		timer.reset();
 		timer.start();
 
 		currTimeSec = 0.0;
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
-		
+
 		auto.start();
 		
 	}
@@ -160,7 +176,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		LiveWindow.run();
-		//Drive Train
+		// Drive Train
 		LiveWindow.addActuator("Drive Train", "Front Left Motor", robot.leftDriveMotorA);
 		LiveWindow.addActuator("Drive Train", "Back Left Motor", robot.leftDriveMotorB);
 		LiveWindow.addActuator("Drive Train", "Front Right Motor", robot.rightDriveMotorA);
@@ -197,9 +213,8 @@ public class Robot extends IterativeRobot {
 		} else if (humanControl.getTankDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = false;
 		}
-		
+
 		lights.setDisabledLights();
 	}
-	
-	
+
 }
