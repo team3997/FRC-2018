@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.tables.ITableListener;
 public class DashboardInput {
 	private NetworkTable prefs;
 	ITableListener m_listener;
-	Preferences pref;
+	Preferences preferences;
 	public DashboardInput() {
 		m_listener = new ITableListener() {
 		    @Override
@@ -88,7 +88,7 @@ public class DashboardInput {
 
 		DashboardVariables.gearRamp = prefs.getBoolean("GoToGearRamp", false);
 		DashboardVariables.gearDown = prefs.getBoolean("GoToGearDown", false);
-
+		DashboardVariables.max_speed = prefs.getNumber("MAX_SPEED", 1.0);
 		
 	}
 	
