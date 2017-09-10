@@ -2,20 +2,23 @@ package org.usfirst.frc.team3997.robot.auto.routines;
 
 import org.usfirst.frc.team3997.robot.MasterController;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutine;
-
+import org.usfirst.frc.team3997.robot.controllers.MotionController;
 
 import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 
 public class LeftGearRoutine extends AutoRoutine {
 	private MasterController controllers;
+	private Trajectory trajectory;
 	public LeftGearRoutine(MasterController controllers) {
 		this.controllers = controllers;
+		trajectory = null;
 	}
 
 	@Override
 	public void prestart() {
-		
+		trajectory = MotionController.generateTrajectory(new Waypoint[] { new Waypoint(0, 98, Pathfinder.d2r(70))});
 	}
 
 	@Override

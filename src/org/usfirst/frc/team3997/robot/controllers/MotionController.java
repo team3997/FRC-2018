@@ -34,6 +34,17 @@ public class MotionController {
 		left = new EncoderFollower(modifier.getLeftTrajectory());
 		right = new EncoderFollower(modifier.getRightTrajectory());
 	}
+	
+public void setUp(Trajectory trajectoryInput) {
+		
+		trajectory = trajectoryInput;
+
+		// TODO find distance between front and rear axles of a vehicle
+		modifier = new TankModifier(trajectory).modify(0.5);
+		left = new EncoderFollower(modifier.getLeftTrajectory());
+		right = new EncoderFollower(modifier.getRightTrajectory());
+	}
+	
 	public void setUp(File trajectoryCSV) {
 		
 		trajectory = Pathfinder.readFromCSV(trajectoryCSV);
@@ -44,6 +55,10 @@ public class MotionController {
 		right = new EncoderFollower(modifier.getRightTrajectory());
 	}
 
+	public static Trajectory generateTrajectory(Waypoint[] points) {
+		Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, Params.maximum_velocity, Params.maximum_acceleration, Params.maximum_jerk);
+		return Pathfinder.generate(points, config);
+	}
 
 	public void enable() {
 		// TODO get max velocity
