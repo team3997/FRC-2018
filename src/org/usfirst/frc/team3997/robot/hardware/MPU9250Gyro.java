@@ -199,29 +199,41 @@ public class MPU9250Gyro {
 	static final int ADO = 0;
 
 	// Set initial input parameters TODO HELP
-	enum Ascale {
-	  AFS_2G = 0,
-	  AFS_4G,
-	  AFS_8G,
-	  AFS_16G
+	private enum Ascale {
+		AFS_2G(0), AFS_4G(0), AFS_8G(0), AFS_16G(0);
+		private int value;
+
+		private Ascale(int value) {
+			this.value = value;
+		}
 	};
 
-	enum Gscale {
-	  GFS_250DPS = 0,
-	  GFS_500DPS,
-	  GFS_1000DPS,
-	  GFS_2000DPS
+	private enum Gscale {
+		GFS_250DPS(0), GFS_500DPS(0), GFS_1000DPS(0), GFS_2000DPS(0);
+
+		private int value;
+
+		private Gscale(int value) {
+			this.value = value;
+		}
 	};
 
-	enum Mscale {
-	  MFS_14BITS = 0, // 0.6 mG per LSB
-	  MFS_16BITS      // 0.15 mG per LSB
+	private enum Mscale {
+		MFS_14BITS(0), // 0.6 mG per LSB
+		MFS_16BITS(0);
+		// 0.15 mG per LSB
+
+		private int value;
+
+		private Mscale(int value) {
+			this.value = value;
+		}
 	};
 
-	int Ascale = AFS_2G; // AFS_2G, AFS_4G, AFS_8G, AFS_16G
-	int Gscale = GFS_250DPS; // GFS_250DPS, GFS_500DPS, GFS_1000DPS,
+	int Ascale = Ascale.AFS_2G; // AFS_2G, AFS_4G, AFS_8G, AFS_16G
+	int Gscale = Gscale.GFS_250DPS; // GFS_250DPS, GFS_500DPS, GFS_1000DPS,
 								// GFS_2000DPS
-	int Mscale = MFS_16BITS; // MFS_14BITS or MFS_16BITS, 14-bit or 16-bit
+	int Mscale = Mscale.MFS_16BITS; // MFS_14BITS or MFS_16BITS, 14-bit or 16-bit
 								// magnetometer resolution
 	int Mmode = 0x06; // Either 8 Hz 0x02) or 100 Hz (0x06) magnetometer data
 						// ODR
@@ -642,17 +654,17 @@ public class MPU9250Gyro {
 
 
 	// Accelerometer and gyroscope self test; check calibration wrt factory settings
-	public void MPU9250SelfTest(float destination) // Should return percent deviation from factory trim values, +/- 14 or less deviation is a pass
+	public void MPU9250SelfTest(float[] destination) // Should return percent deviation from factory trim values, +/- 14 or less deviation is a pass
 	{
 	   //TODO help
 	   int[] rawData = {0, 0, 0, 0, 0, 0};
 	   int[] selfTest = new int[6];
-	   int[] gAvg[3] = {0};
-	   int[] aAvg[3] = {0};
-	   int[] aSTAvg[3] = {0};
-	   int[] gSTAvg[3] = {0};
+	   int[] gAvg = {0, 0, 0};
+	   int[] aAvg = {0, 0, 0};
+	   int[] aSTAvg = {0, 0, 0};
+	   int[] gSTAvg = {0, 0, 0};
 	   float[] factoryTrim = new float[6];
-	   long FS = 0;
+	   int FS = 0;
 	   
 	  writeByte(MPU9250_ADDRESS, SMPLRT_DIV, 0x00); // Set gyro sample rate to 1 kHz
 	  writeByte(MPU9250_ADDRESS, CONFIG, 0x02); // Set gyro sample rate to 1 kHz and DLPF to 92 Hz
@@ -662,49 +674,49 @@ public class MPU9250Gyro {
 
 	  for( int ii = 0; ii < 200; ii++) { // get average current values of gyro and acclerometer
 	  
-	  readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]); // Read the six raw data registers into data array
+	  readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, rawData); // Read the six raw data registers into data array
 	  aAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ; // Turn the MSB and LSB into a signed 16-bit value
 	  aAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
 	  aAvg[2] += (int)(((int)rawData[4] << 8) | rawData[5]) ;
 	  
-	    readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, &rawData[0]); // Read the six raw data registers sequentially into data array
+	  readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, rawData); // Read the six raw data registers sequentially into data array
 	  gAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ; // Turn the MSB and LSB into a signed 16-bit value
 	  gAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
 	  gAvg[2] += (int)(((int)rawData[4] << 8) | rawData[5]) ;
 	  }
 	  
 	  for (int ii =0; ii < 3; ii++) { // Get average of 200 values and store as average current readings
-	  aAvg[ii] /= 200;
-	  gAvg[ii] /= 200;
+		  aAvg[ii] /= 200;
+		  gAvg[ii] /= 200;
 	  }
 	  
 	// Configure the accelerometer for self-test
 	   writeByte(MPU9250_ADDRESS, ACCEL_CONFIG, 0xE0); // Enable self test on all three axes and set accelerometer range to +/- 2 g
 	   writeByte(MPU9250_ADDRESS, GYRO_CONFIG, 0xE0); // Enable self test on all three axes and set gyro range to +/- 250 degrees/s
-	   delay(25); // Delay a while to let the device stabilize
+	   wait(25); // Delay a while to let the device stabilize
 
 	  for( int ii = 0; ii < 200; ii++) { // get average self-test values of gyro and acclerometer
 	  
-	  readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]); // Read the six raw data registers into data array
+	  readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, rawData); // Read the six raw data registers into data array
 	  aSTAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ; // Turn the MSB and LSB into a signed 16-bit value
 	  aSTAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
 	  aSTAvg[2] += (int)(((int)rawData[4] << 8) | rawData[5]) ;
 	  
-	    readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, &rawData[0]); // Read the six raw data registers sequentially into data array
+	  readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, rawData); // Read the six raw data registers sequentially into data array
 	  gSTAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ; // Turn the MSB and LSB into a signed 16-bit value
 	  gSTAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
 	  gSTAvg[2] += (int)(((int)rawData[4] << 8) | rawData[5]) ;
 	  }
 	  
 	  for (int ii =0; ii < 3; ii++) { // Get average of 200 values and store as average self-test readings
-	  aSTAvg[ii] /= 200;
-	  gSTAvg[ii] /= 200;
+		  aSTAvg[ii] /= 200;
+		  gSTAvg[ii] /= 200;
 	  }
 	  
 	 // Configure the gyro and accelerometer for normal operation
 	   writeByte(MPU9250_ADDRESS, ACCEL_CONFIG, 0x00);
 	   writeByte(MPU9250_ADDRESS, GYRO_CONFIG, 0x00);
-	   delay(25); // Delay a while to let the device stabilize
+	   wait(25); // Delay a while to let the device stabilize
 	   
 	   // Retrieve accelerometer and gyro factory Self-Test Code from USR_Reg
 	   selfTest[0] = readByte(MPU9250_ADDRESS, SELF_TEST_X_ACCEL); // X-axis accel self-test results
@@ -715,18 +727,18 @@ public class MPU9250Gyro {
 	   selfTest[5] = readByte(MPU9250_ADDRESS, SELF_TEST_Z_GYRO); // Z-axis gyro self-test results
 
 	  // Retrieve factory self-test value from self-test code reads
-	   factoryTrim[0] = (float)(2620/1<<FS)*(pow( 1.01 , ((float)selfTest[0] - 1.0) )); // FT[Xa] factory trim calculation
-	   factoryTrim[1] = (float)(2620/1<<FS)*(pow( 1.01 , ((float)selfTest[1] - 1.0) )); // FT[Ya] factory trim calculation
-	   factoryTrim[2] = (float)(2620/1<<FS)*(pow( 1.01 , ((float)selfTest[2] - 1.0) )); // FT[Za] factory trim calculation
-	   factoryTrim[3] = (float)(2620/1<<FS)*(pow( 1.01 , ((float)selfTest[3] - 1.0) )); // FT[Xg] factory trim calculation
-	   factoryTrim[4] = (float)(2620/1<<FS)*(pow( 1.01 , ((float)selfTest[4] - 1.0) )); // FT[Yg] factory trim calculation
-	   factoryTrim[5] = (float)(2620/1<<FS)*(pow( 1.01 , ((float)selfTest[5] - 1.0) )); // FT[Zg] factory trim calculation
+	   factoryTrim[0] = (float)(2620/1<<FS)*(Math.pow(1.01, ((float)selfTest[0] - 1.0) )); // FT[Xa] factory trim calculation
+	   factoryTrim[1] = (float)(2620/1<<FS)*(Math.pow(1.01, ((float)selfTest[1] - 1.0) )); // FT[Ya] factory trim calculation
+	   factoryTrim[2] = (float)(2620/1<<FS)*(Math.pow(1.01 , ((float)selfTest[2] - 1.0) )); // FT[Za] factory trim calculation
+	   factoryTrim[3] = (float)(2620/1<<FS)*(Math.pow(1.01 , ((float)selfTest[3] - 1.0) )); // FT[Xg] factory trim calculation
+	   factoryTrim[4] = (float)(2620/1<<FS)*(Math.pow(1.01 , ((float)selfTest[4] - 1.0) )); // FT[Yg] factory trim calculation
+	   factoryTrim[5] = (float)(2620/1<<FS)*(Math.pow(1.01 , ((float)selfTest[5] - 1.0) )); // FT[Zg] factory trim calculation
 	 
 	 // Report results as a ratio of (STR - FT)/FT; the change from Factory Trim of the Self-Test Response
 	 // To get percent, must multiply by 100
 	   for (int i = 0; i < 3; i++) {
-	     destination[i] = 100.0*((float)(aSTAvg[i] - aAvg[i]))/factoryTrim[i] - 100.; // Report percent differences
-	     destination[i+3] = 100.0*((float)(gSTAvg[i] - gAvg[i]))/factoryTrim[i+3] - 100.; // Report percent differences
+	     destination[i] = (float) (100.0*((float)(aSTAvg[i] - aAvg[i]))/factoryTrim[i] - 100.0); // Report percent differences
+	     destination[i+3] = (float) (100.0*((float)(gSTAvg[i] - gAvg[i]))/factoryTrim[i+3] - 100.0); // Report percent differences
 	   }
 	   
 	}
@@ -772,7 +784,7 @@ public class MPU9250Gyro {
 	            float q4q4 = q4 * q4;
 
 	            // Normalise accelerometer measurement
-	            norm = sqrt(ax * ax + ay * ay + az * az);
+	            norm = (float) Math.sqrt(ax * ax + ay * ay + az * az);
 	            if (norm == 0.0f) return; // handle NaN
 	            norm = 1.0f/norm;
 	            ax *= norm;
@@ -780,7 +792,7 @@ public class MPU9250Gyro {
 	            az *= norm;
 
 	            // Normalise magnetometer measurement
-	            norm = sqrt(mx * mx + my * my + mz * mz);
+	            norm = (float) Math.sqrt(mx * mx + my * my + mz * mz);
 	            if (norm == 0.0f) return; // handle NaN
 	            norm = 1.0f/norm;
 	            mx *= norm;
@@ -794,7 +806,7 @@ public class MPU9250Gyro {
 	            _2q2mx = 2.0f * q2 * mx;
 	            hx = mx * q1q1 - _2q1my * q4 + _2q1mz * q3 + mx * q2q2 + _2q2 * my * q3 + _2q2 * mz * q4 - mx * q3q3 - mx * q4q4;
 	            hy = _2q1mx * q4 + my * q1q1 - _2q1mz * q2 + _2q2mx * q3 - my * q2q2 + my * q3q3 + _2q3 * mz * q4 - my * q4q4;
-	            _2bx = sqrt(hx * hx + hy * hy);
+	            _2bx = (float) Math.sqrt(hx * hx + hy * hy);
 	            _2bz = -_2q1mx * q3 + _2q1my * q2 + mz * q1q1 + _2q2mx * q4 - mz * q2q2 + _2q3 * my * q4 - mz * q3q3 + mz * q4q4;
 	            _4bx = 2.0f * _2bx;
 	            _4bz = 2.0f * _2bz;
@@ -804,7 +816,7 @@ public class MPU9250Gyro {
 	            s2 = _2q4 * (2.0f * q2q4 - _2q1q3 - ax) + _2q1 * (2.0f * q1q2 + _2q3q4 - ay) - 4.0f * q2 * (1.0f - 2.0f * q2q2 - 2.0f * q3q3 - az) + _2bz * q4 * (_2bx * (0.5f - q3q3 - q4q4) + _2bz * (q2q4 - q1q3) - mx) + (_2bx * q3 + _2bz * q1) * (_2bx * (q2q3 - q1q4) + _2bz * (q1q2 + q3q4) - my) + (_2bx * q4 - _4bz * q2) * (_2bx * (q1q3 + q2q4) + _2bz * (0.5f - q2q2 - q3q3) - mz);
 	            s3 = -_2q1 * (2.0f * q2q4 - _2q1q3 - ax) + _2q4 * (2.0f * q1q2 + _2q3q4 - ay) - 4.0f * q3 * (1.0f - 2.0f * q2q2 - 2.0f * q3q3 - az) + (-_4bx * q3 - _2bz * q1) * (_2bx * (0.5f - q3q3 - q4q4) + _2bz * (q2q4 - q1q3) - mx) + (_2bx * q2 + _2bz * q4) * (_2bx * (q2q3 - q1q4) + _2bz * (q1q2 + q3q4) - my) + (_2bx * q1 - _4bz * q3) * (_2bx * (q1q3 + q2q4) + _2bz * (0.5f - q2q2 - q3q3) - mz);
 	            s4 = _2q2 * (2.0f * q2q4 - _2q1q3 - ax) + _2q3 * (2.0f * q1q2 + _2q3q4 - ay) + (-_4bx * q4 + _2bz * q2) * (_2bx * (0.5f - q3q3 - q4q4) + _2bz * (q2q4 - q1q3) - mx) + (-_2bx * q1 + _2bz * q3) * (_2bx * (q2q3 - q1q4) + _2bz * (q1q2 + q3q4) - my) + _2bx * q2 * (_2bx * (q1q3 + q2q4) + _2bz * (0.5f - q2q2 - q3q3) - mz);
-	            norm = sqrt(s1 * s1 + s2 * s2 + s3 * s3 + s4 * s4);    // normalise step magnitude
+	            norm = (float) Math.sqrt(s1 * s1 + s2 * s2 + s3 * s3 + s4 * s4);    // normalise step magnitude
 	            norm = 1.0f/norm;
 	            s1 *= norm;
 	            s2 *= norm;
@@ -822,7 +834,7 @@ public class MPU9250Gyro {
 	            q2 += qDot2 * deltat;
 	            q3 += qDot3 * deltat;
 	            q4 += qDot4 * deltat;
-	            norm = sqrt(q1 * q1 + q2 * q2 + q3 * q3 + q4 * q4);    // normalise quaternion
+	            norm = (float) Math.sqrt(q1 * q1 + q2 * q2 + q3 * q3 + q4 * q4);    // normalise quaternion
 	            norm = 1.0f/norm;
 	            q[0] = q1 * norm;
 	            q[1] = q2 * norm;
@@ -857,7 +869,7 @@ public class MPU9250Gyro {
 	            float q4q4 = q4 * q4;   
 
 	            // Normalise accelerometer measurement
-	            norm = sqrt(ax * ax + ay * ay + az * az);
+	            norm = (float) Math.sqrt(ax * ax + ay * ay + az * az);
 	            if (norm == 0.0f) return; // handle NaN
 	            norm = 1.0f / norm;        // use reciprocal for division
 	            ax *= norm;
@@ -865,7 +877,7 @@ public class MPU9250Gyro {
 	            az *= norm;
 
 	            // Normalise magnetometer measurement
-	            norm = sqrt(mx * mx + my * my + mz * mz);
+	            norm = (float) Math.sqrt(mx * mx + my * my + mz * mz);
 	            if (norm == 0.0f) return; // handle NaN
 	            norm = 1.0f / norm;        // use reciprocal for division
 	            mx *= norm;
@@ -875,7 +887,7 @@ public class MPU9250Gyro {
 	            // Reference direction of Earth's magnetic field
 	            hx = 2.0f * mx * (0.5f - q3q3 - q4q4) + 2.0f * my * (q2q3 - q1q4) + 2.0f * mz * (q2q4 + q1q3);
 	            hy = 2.0f * mx * (q2q3 + q1q4) + 2.0f * my * (0.5f - q2q2 - q4q4) + 2.0f * mz * (q3q4 - q1q2);
-	            bx = sqrt((hx * hx) + (hy * hy));
+	            bx = (float) Math.sqrt((hx * hx) + (hy * hy));
 	            bz = 2.0f * mx * (q2q4 - q1q3) + 2.0f * my * (q3q4 + q1q2) + 2.0f * mz * (0.5f - q2q2 - q3q3);
 
 	            // Estimated direction of gravity and magnetic field
@@ -918,7 +930,7 @@ public class MPU9250Gyro {
 	            q4 = pc + (q1 * gz + pa * gy - pb * gx) * (0.5f * deltat);
 
 	            // Normalise quaternion
-	            norm = sqrt(q1 * q1 + q2 * q2 + q3 * q3 + q4 * q4);
+	            norm = Math.sqrt(q1 * q1 + q2 * q2 + q3 * q3 + q4 * q4);
 	            norm = 1.0f / norm;
 	            q[0] = q1 * norm;
 	            q[1] = q2 * norm;
