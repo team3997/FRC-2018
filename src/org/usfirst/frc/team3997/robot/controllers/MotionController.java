@@ -75,6 +75,7 @@ public void setUp(Trajectory trajectoryInput) {
 		right.configureEncoder(robot.rightDriveEncoder.get(), 100, .1016);
 		right.configurePIDVA(1.0, 0.0, 0.0, (1 / Params.maximum_velocity), 0);
 		right.configurePIDVA(1.0, 0.0, 0.0, (1 / Params.maximum_velocity), 0);
+		robot.resetGyro();
 		
 	}
 	// TODO Put this in control loop

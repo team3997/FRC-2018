@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
 import edu.wpi.first.wpilibj.*;
-
+import java.lang.Math;
 /**
  * @author peter
  *
@@ -29,169 +29,171 @@ public class MPU9250Gyro {
 	// document; the MPU9250 and MPU9150 are virtually identical but the latter
 	// has
 	// a different register map
-
+	
+	static final int MPU9250_ADDRESS = 0x69;
+	
 	// Magnetometer Registers
-	int AK8963_ADDRESS = 0x0C;
-	int WHO_AM_I_AK8963 = 0x49; // (AKA WIA) should return 0x48
-	int INFO = 0x01;
-	int AK8963_ST1 = 0x02; // data ready status bit 0
-	int AK8963_XOUT_L = 0x03; // data
-	int AK8963_XOUT_H = 0x04;
-	int AK8963_YOUT_L = 0x05;
-	int AK8963_YOUT_H = 0x06;
-	int AK8963_ZOUT_L = 0x07;
-	int AK8963_ZOUT_H = 0x08;
-	int AK8963_ST2 = 0x09; // Data overflow bit 3 and data read error status bit
+	static final int AK8963_ADDRESS = 0x0C;
+	static final int WHO_AM_I_AK8963 = 0x49; // (AKA WIA) should return 0x48
+	static final int INFO = 0x01;
+	static final int AK8963_ST1 = 0x02; // data ready status bit 0
+	static final int AK8963_XOUT_L = 0x03; // data
+	static final int AK8963_XOUT_H = 0x04;
+	static final int AK8963_YOUT_L = 0x05;
+	static final int AK8963_YOUT_H = 0x06;
+	static final int AK8963_ZOUT_L = 0x07;
+	static final int AK8963_ZOUT_H = 0x08;
+	static final int AK8963_ST2 = 0x09; // Data overflow bit 3 and data read error status bit
 							// 2
-	int AK8963_CNTL = 0x0A; // Power down (0000), single-measurement (0001),
+	static final int AK8963_CNTL = 0x0A; // Power down (0000), single-measurement (0001),
 							// self-test (1000) and Fuse ROM (1111) modes on
 							// bits 3:0
-	int AK8963_ASTC = 0x0C; // Self test control
-	int AK8963_I2CDIS = 0x0F; // I2C disable
-	int AK8963_ASAX = 0x10; // Fuse ROM x-axis sensitivity adjustment value
-	int AK8963_ASAY = 0x11; // Fuse ROM y-axis sensitivity adjustment value
-	int AK8963_ASAZ = 0x12; // Fuse ROM z-axis sensitivity adjustment value
+	static final int AK8963_ASTC = 0x0C; // Self test control
+	static final int AK8963_I2CDIS = 0x0F; // I2C disable
+	static final int AK8963_ASAX = 0x10; // Fuse ROM x-axis sensitivity adjustment value
+	static final int AK8963_ASAY = 0x11; // Fuse ROM y-axis sensitivity adjustment value
+	static final int AK8963_ASAZ = 0x12; // Fuse ROM z-axis sensitivity adjustment value
 
-	int SELF_TEST_X_GYRO = 0x00;
-	int SELF_TEST_Y_GYRO = 0x01;
-	int SELF_TEST_Z_GYRO = 0x02;
+	static final int SELF_TEST_X_GYRO = 0x00;
+	static final int SELF_TEST_Y_GYRO = 0x01;
+	static final int SELF_TEST_Z_GYRO = 0x02;
 
 	/*
-	 * int X_FINE_GAIN 0x03 // [7:0] fine gain int Y_FINE_GAIN 0x04 int
-	 * Z_FINE_GAIN 0x05 int XA_OFFSET_H 0x06 // User-defined trim values for
-	 * accelerometer int XA_OFFSET_L_TC 0x07 int YA_OFFSET_H 0x08 int
-	 * YA_OFFSET_L_TC 0x09 int ZA_OFFSET_H 0x0A int ZA_OFFSET_L_TC 0x0B
+	 * static final int X_FINE_GAIN 0x03 // [7:0] fine gain static final int Y_FINE_GAIN 0x04 static final int
+	 * Z_FINE_GAIN 0x05 static final int XA_OFFSET_H 0x06 // User-defined trim values for
+	 * accelerometer static final int XA_OFFSET_L_TC 0x07 static final int YA_OFFSET_H 0x08 static final int
+	 * YA_OFFSET_L_TC 0x09 static final int ZA_OFFSET_H 0x0A static final int ZA_OFFSET_L_TC 0x0B
 	 */
 
-	int SELF_TEST_X_ACCEL = 0x0D;
-	int SELF_TEST_Y_ACCEL = 0x0E;
-	int SELF_TEST_Z_ACCEL = 0x0F;
+	static final int SELF_TEST_X_ACCEL = 0x0D;
+	static final int SELF_TEST_Y_ACCEL = 0x0E;
+	static final int SELF_TEST_Z_ACCEL = 0x0F;
 
-	int SELF_TEST_A = 0x10;
+	static final int SELF_TEST_A = 0x10;
 
-	int XG_OFFSET_H = 0x13; // User-defined trim values for gyroscope
-	int XG_OFFSET_L = 0x14;
-	int YG_OFFSET_H = 0x15;
-	int YG_OFFSET_L = 0x16;
-	int ZG_OFFSET_H = 0x17;
-	int ZG_OFFSET_L = 0x18;
-	int SMPLRT_DIV = 0x19;
-	int CONFIG = 0x1A;
-	int GYRO_CONFIG = 0x1B;
-	int ACCEL_CONFIG = 0x1C;
-	int ACCEL_CONFIG2 = 0x1D;
-	int LP_ACCEL_ODR = 0x1E;
-	int WOM_THR = 0x1F;
+	static final int XG_OFFSET_H = 0x13; // User-defined trim values for gyroscope
+	static final int XG_OFFSET_L = 0x14;
+	static final int YG_OFFSET_H = 0x15;
+	static final int YG_OFFSET_L = 0x16;
+	static final int ZG_OFFSET_H = 0x17;
+	static final int ZG_OFFSET_L = 0x18;
+	static final int SMPLRT_DIV = 0x19;
+	static final int CONFIG = 0x1A;
+	static final int GYRO_CONFIG = 0x1B;
+	static final int ACCEL_CONFIG = 0x1C;
+	static final int ACCEL_CONFIG2 = 0x1D;
+	static final int LP_ACCEL_ODR = 0x1E;
+	static final int WOM_THR = 0x1F;
 
-	// Duration counter threshold for motion interrupt generation, 1 kHz rate,
+	// Duration counter threshold for motion static final interrupt generation, 1 kHz rate,
 	// LSB = 1 ms
-	int MOT_DUR = 0x20;
+	static final int MOT_DUR = 0x20;
 	// Zero-motion detection threshold bits [7:0]
-	int ZMOT_THR = 0x21;
-	// Duration counter threshold for zero motion interrupt generation, 16 Hz
+	static final int ZMOT_THR = 0x21;
+	// Duration counter threshold for zero motion static final interrupt generation, 16 Hz
 	// rate,
 	// LSB = 64 ms
-	int ZRMOT_DUR = 0x22;
+	static final int ZRMOT_DUR = 0x22;
 
-	int FIFO_EN = 0x23;
-	int I2C_MST_CTRL = 0x24;
-	int I2C_SLV0_ADDR = 0x25;
-	int I2C_SLV0_REG = 0x26;
-	int I2C_SLV0_CTRL = 0x27;
-	int I2C_SLV1_ADDR = 0x28;
-	int I2C_SLV1_REG = 0x29;
-	int I2C_SLV1_CTRL = 0x2A;
-	int I2C_SLV2_ADDR = 0x2B;
-	int I2C_SLV2_REG = 0x2C;
-	int I2C_SLV2_CTRL = 0x2D;
-	int I2C_SLV3_ADDR = 0x2E;
-	int I2C_SLV3_REG = 0x2F;
-	int I2C_SLV3_CTRL = 0x30;
-	int I2C_SLV4_ADDR = 0x31;
-	int I2C_SLV4_REG = 0x32;
-	int I2C_SLV4_DO = 0x33;
-	int I2C_SLV4_CTRL = 0x34;
-	int I2C_SLV4_DI = 0x35;
-	int I2C_MST_STATUS = 0x36;
-	int INT_PIN_CFG = 0x37;
-	int INT_ENABLE = 0x38;
-	int DMP_INT_STATUS = 0x39; // Check DMP interrupt
-	int INT_STATUS = 0x3A;
-	int ACCEL_XOUT_H = 0x3B;
-	int ACCEL_XOUT_L = 0x3C;
-	int ACCEL_YOUT_H = 0x3D;
-	int ACCEL_YOUT_L = 0x3E;
-	int ACCEL_ZOUT_H = 0x3F;
-	int ACCEL_ZOUT_L = 0x40;
-	int TEMP_OUT_H = 0x41;
-	int TEMP_OUT_L = 0x42;
-	int GYRO_XOUT_H = 0x43;
-	int GYRO_XOUT_L = 0x44;
-	int GYRO_YOUT_H = 0x45;
-	int GYRO_YOUT_L = 0x46;
-	int GYRO_ZOUT_H = 0x47;
-	int GYRO_ZOUT_L = 0x48;
-	int EXT_SENS_DATA_00 = 0x49;
-	int EXT_SENS_DATA_01 = 0x4A;
-	int EXT_SENS_DATA_02 = 0x4B;
-	int EXT_SENS_DATA_03 = 0x4C;
-	int EXT_SENS_DATA_04 = 0x4D;
-	int EXT_SENS_DATA_05 = 0x4E;
-	int EXT_SENS_DATA_06 = 0x4F;
-	int EXT_SENS_DATA_07 = 0x50;
-	int EXT_SENS_DATA_08 = 0x51;
-	int EXT_SENS_DATA_09 = 0x52;
-	int EXT_SENS_DATA_10 = 0x53;
-	int EXT_SENS_DATA_11 = 0x54;
-	int EXT_SENS_DATA_12 = 0x55;
-	int EXT_SENS_DATA_13 = 0x56;
-	int EXT_SENS_DATA_14 = 0x57;
-	int EXT_SENS_DATA_15 = 0x58;
-	int EXT_SENS_DATA_16 = 0x59;
-	int EXT_SENS_DATA_17 = 0x5A;
-	int EXT_SENS_DATA_18 = 0x5B;
-	int EXT_SENS_DATA_19 = 0x5C;
-	int EXT_SENS_DATA_20 = 0x5D;
-	int EXT_SENS_DATA_21 = 0x5E;
-	int EXT_SENS_DATA_22 = 0x5F;
-	int EXT_SENS_DATA_23 = 0x60;
-	int MOT_DETECT_STATUS = 0x61;
-	int I2C_SLV0_DO = 0x63;
-	int I2C_SLV1_DO = 0x64;
-	int I2C_SLV2_DO = 0x65;
-	int I2C_SLV3_DO = 0x66;
-	int I2C_MST_wait_CTRL = 0x67;
-	int SIGNAL_PATH_RESET = 0x68;
-	int MOT_DETECT_CTRL = 0x69;
-	int USER_CTRL = 0x6A; // Bit 7 enable DMP, bit 3 reset DMP
-	int PWR_MGMT_1 = 0x6B; // Device defaults to the SLEEP mode
-	int PWR_MGMT_2 = 0x6C;
-	int DMP_BANK = 0x6D; // Activates a specific bank in the DMP
-	int DMP_RW_PNT = 0x6E; // Set read/write pointer to a specific start address
+	static final int FIFO_EN = 0x23;
+	static final int I2C_MST_CTRL = 0x24;
+	static final int I2C_SLV0_ADDR = 0x25;
+	static final int I2C_SLV0_REG = 0x26;
+	static final int I2C_SLV0_CTRL = 0x27;
+	static final int I2C_SLV1_ADDR = 0x28;
+	static final int I2C_SLV1_REG = 0x29;
+	static final int I2C_SLV1_CTRL = 0x2A;
+	static final int I2C_SLV2_ADDR = 0x2B;
+	static final int I2C_SLV2_REG = 0x2C;
+	static final int I2C_SLV2_CTRL = 0x2D;
+	static final int I2C_SLV3_ADDR = 0x2E;
+	static final int I2C_SLV3_REG = 0x2F;
+	static final int I2C_SLV3_CTRL = 0x30;
+	static final int I2C_SLV4_ADDR = 0x31;
+	static final int I2C_SLV4_REG = 0x32;
+	static final int I2C_SLV4_DO = 0x33;
+	static final int I2C_SLV4_CTRL = 0x34;
+	static final int I2C_SLV4_DI = 0x35;
+	static final int I2C_MST_STATUS = 0x36;
+	static final int static final int_PIN_CFG = 0x37;
+	static final int static final int_ENABLE = 0x38;
+	static final int DMP_static final int_STATUS = 0x39; // Check DMP static final interrupt
+	static final int static final int_STATUS = 0x3A;
+	static final int ACCEL_XOUT_H = 0x3B;
+	static final int ACCEL_XOUT_L = 0x3C;
+	static final int ACCEL_YOUT_H = 0x3D;
+	static final int ACCEL_YOUT_L = 0x3E;
+	static final int ACCEL_ZOUT_H = 0x3F;
+	static final int ACCEL_ZOUT_L = 0x40;
+	static final int TEMP_OUT_H = 0x41;
+	static final int TEMP_OUT_L = 0x42;
+	static final int GYRO_XOUT_H = 0x43;
+	static final int GYRO_XOUT_L = 0x44;
+	static final int GYRO_YOUT_H = 0x45;
+	static final int GYRO_YOUT_L = 0x46;
+	static final int GYRO_ZOUT_H = 0x47;
+	static final int GYRO_ZOUT_L = 0x48;
+	static final int EXT_SENS_DATA_00 = 0x49;
+	static final int EXT_SENS_DATA_01 = 0x4A;
+	static final int EXT_SENS_DATA_02 = 0x4B;
+	static final int EXT_SENS_DATA_03 = 0x4C;
+	static final int EXT_SENS_DATA_04 = 0x4D;
+	static final int EXT_SENS_DATA_05 = 0x4E;
+	static final int EXT_SENS_DATA_06 = 0x4F;
+	static final int EXT_SENS_DATA_07 = 0x50;
+	static final int EXT_SENS_DATA_08 = 0x51;
+	static final int EXT_SENS_DATA_09 = 0x52;
+	static final int EXT_SENS_DATA_10 = 0x53;
+	static final int EXT_SENS_DATA_11 = 0x54;
+	static final int EXT_SENS_DATA_12 = 0x55;
+	static final int EXT_SENS_DATA_13 = 0x56;
+	static final int EXT_SENS_DATA_14 = 0x57;
+	static final int EXT_SENS_DATA_15 = 0x58;
+	static final int EXT_SENS_DATA_16 = 0x59;
+	static final int EXT_SENS_DATA_17 = 0x5A;
+	static final int EXT_SENS_DATA_18 = 0x5B;
+	static final int EXT_SENS_DATA_19 = 0x5C;
+	static final int EXT_SENS_DATA_20 = 0x5D;
+	static final int EXT_SENS_DATA_21 = 0x5E;
+	static final int EXT_SENS_DATA_22 = 0x5F;
+	static final int EXT_SENS_DATA_23 = 0x60;
+	static final int MOT_DETECT_STATUS = 0x61;
+	static final int I2C_SLV0_DO = 0x63;
+	static final int I2C_SLV1_DO = 0x64;
+	static final int I2C_SLV2_DO = 0x65;
+	static final int I2C_SLV3_DO = 0x66;
+	static final int I2C_MST_wait_CTRL = 0x67;
+	static final int SIGNAL_PATH_RESET = 0x68;
+	static final int MOT_DETECT_CTRL = 0x69;
+	static final int USER_CTRL = 0x6A; // Bit 7 enable DMP, bit 3 reset DMP
+	static final int PWR_MGMT_1 = 0x6B; // Device defaults to the SLEEP mode
+	static final int PWR_MGMT_2 = 0x6C;
+	static final int DMP_BANK = 0x6D; // Activates a specific bank in the DMP
+	static final int DMP_RW_PNT = 0x6E; // Set read/write postatic final inter to a specific start address
 							// in specified DMP bank
-	int DMP_REG = 0x6F; // Register in DMP from which to read or to which to
+	static final int DMP_REG = 0x6F; // Register in DMP from which to read or to which to
 						// write
-	int DMP_REG_1 = 0x70;
-	int DMP_REG_2 = 0x71;
-	int FIFO_COUNTH = 0x72;
-	int FIFO_COUNTL = 0x73;
-	int FIFO_R_W = 0x74;
-	int WHO_AM_I_MPU9250 = 0x75; // Should return 0x71
-	int XA_OFFSET_H = 0x77;
-	int XA_OFFSET_L = 0x78;
-	int YA_OFFSET_H = 0x7A;
-	int YA_OFFSET_L = 0x7B;
-	int ZA_OFFSET_H = 0x7D;
-	int ZA_OFFSET_L = 0x7E;
+	static final int DMP_REG_1 = 0x70;
+	static final int DMP_REG_2 = 0x71;
+	static final int FIFO_COUNTH = 0x72;
+	static final int FIFO_COUNTL = 0x73;
+	static final int FIFO_R_W = 0x74;
+	static final int WHO_AM_I_MPU9250 = 0x75; // Should return 0x71
+	static final int XA_OFFSET_H = 0x77;
+	static final int XA_OFFSET_L = 0x78;
+	static final int YA_OFFSET_H = 0x7A;
+	static final int YA_OFFSET_L = 0x7B;
+	static final int ZA_OFFSET_H = 0x7D;
+	static final int ZA_OFFSET_L = 0x7E;
 
 	// Using the MPU-9250 breakout board, ADO is set to 0
 	// Seven-bit device address is 110100 for ADO = 0 and 110101 for ADO = 1
-	int ADO = 0;
+	static final int ADO = 0;
 
-	int READ_FLAG = 0x80;
-	int NOT_SPI = -1;
-	int SPI_DATA_RATE = 1000000; // 1MHz is the max speed of the MPU-9250
-	// int SPI_DATA_RATE 1000000 // 1MHz is the max speed of the MPU-9250
+	static final int READ_FLAG = 0x80;
+	static final int NOT_SPI = -1;
+	static final int SPI_DATA_RATE = 1000000; // 1MHz is the max speed of the MPU-9250
+	// static final int SPI_DATA_RATE 1000000 // 1MHz is the max speed of the MPU-9250
 
 	// Set initial input parameters
 	protected enum Ascale
@@ -224,7 +226,7 @@ public class MPU9250Gyro {
 
 	// TODO: Add setter methods for this hard coded stuff
 	// Specify sensor full scale
-	protected int Gscale = GFS_250DPS;
+	protected int Gscale = Gscale.GFS_250DPS;
 	protected int Ascale = AFS_2G;
 	// Choose either 14-bit or 16-bit magnetometer resolution
 	protected int Mscale = MFS_16BITS;
@@ -248,27 +250,32 @@ public class MPU9250Gyro {
 												// integration interval
 	public int Now = 0; // used to calculate integration interval
 
-	public int gyroCount[3]; // Stores the 16-bit signed gyro sensor output
-	public int magCount[3]; // Stores the 16-bit signed magnetometer sensor
+	public int[] gyroCount = new int[3]; // Stores the 16-bit signed gyro sensor output
+	public int[] magCount = new int[3]; // Stores the 16-bit signed magnetometer sensor
 							// output
 	// Scale resolutions per LSB for the sensors
 	public float aRes, igRes, mRes;
 	// Variables to hold latest sensor data values
 	public float ax, ay, az, gx, gy, gz, mx, my, mz;
 	// Factory mag calibration and mag bias
-	public float factoryMagCalibration[3]=
-	{0, 0, 0},factoryMagBias[3]=
+	public float[] factoryMagCalibration=
+	{0, 0, 0};
+	public float[] factoryMagBias=
 	{0, 0, 0};
 	// Bias corrections for gyro, accelerometer, and magnetometer
-	public float gyroBias[3]=
-	{0, 0, 0},accelBias[3]=
-	{0, 0, 0},magBias[3]=
-	{0, 0, 0},magScale[3]=
-	{0, 0, 0};float selfTest[6];
+	public float[] gyroBias=
+	{0, 0, 0}; 
+	public float[] accelBias=
+	{0, 0, 0}; 
+	public float[] magBias=
+	{0, 0, 0}; 
+	public float[] magScale=
+	{0, 0, 0}; 
+	public float[] selfTest = new float[6];
 	// Stores the 16-bit signed accelerometer sensor output
 	int accelCount[3];
 
-	bool isInI2cMode() {
+	boolean isInI2cMode() {
 		return _csPin == -1;
 	}
 
@@ -341,11 +348,11 @@ public class MPU9250Gyro {
 		}
 	}
 
-	void readAccelData(int destination)
+	void readAccelData(int[] destination)
 	{
-	  int rawData[6];  // x/y/z accel register data stored here
+		int[] rawData = new int[6];  // x/y/z accel register data stored here
 	  // Read the six raw data registers into data array
-	  readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]);
+	  readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, rawData[0]);
 
 	  // Turn the MSB and LSB into a signed 16-bit value
 	  destination[0] = ((int)rawData[0] << 8) | rawData[1] ;
@@ -353,11 +360,12 @@ public class MPU9250Gyro {
 	  destination[2] = ((int)rawData[4] << 8) | rawData[5] ;
 	}
 
-	void readGyroData(int destination)
+	void readGyroData(int[] destination)
 	{
-	  int rawData[6];  // x/y/z gyro register data stored here
+		  int[] rawData = new int[6];
+  // x/y/z gyro register data stored here
 	  // Read the six raw data registers sequentially into data array
-	  readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, &rawData[0]);
+	  readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, rawData[0]);
 
 	  // Turn the MSB and LSB into a signed 16-bit value
 	  destination[0] = ((int)rawData[0] << 8) | rawData[1] ;
@@ -365,20 +373,20 @@ public class MPU9250Gyro {
 	  destination[2] = ((int)rawData[4] << 8) | rawData[5] ;
 	}
 
-	void readMagData(int destination)
+	void readMagData(int[] destination)
 	{
 	  // x/y/z gyro register data, ST2 register stored here, must read ST2 at end
 	  // of data acquisition
-	  int rawData[7];
+	  int[] rawData = new int[7];
 	  // Wait for magnetometer data ready bit to be set
 	  if (readByte(AK8963_ADDRESS, AK8963_ST1) & 0x01)
 	  {
 	    // Read the six raw data and ST2 registers sequentially into data array
-	    readBytes(AK8963_ADDRESS, AK8963_XOUT_L, 7, &rawData[0]);
+	    readBytes(AK8963_ADDRESS, AK8963_XOUT_L, 7, rawData[0]);
 	    int c = rawData[6]; // End data read by reading ST2 register
 	    // Check if magnetic sensor overflow set, if not then report data
 	    if (!(c & 0x08))
-	    {
+	    { 
 	      // Turn the MSB and LSB into a signed 16-bit value
 	      destination[0] = ((int)rawData[1] << 8) | rawData[0];
 	      // Data stored as little Endian
@@ -389,7 +397,8 @@ public class MPU9250Gyro {
 	}
 
 	int readTempData() {
-			int rawData[2]; // x/y/z gyro register data stored here
+		  int[] rawData = new int[2];
+		  	// x/y/z gyro register data stored here
 			// Read the two raw data registers sequentially into data array
 			readBytes(MPU9250_ADDRESS,TEMP_OUT_H,2,rawData[0]);
 			// Turn the MSB and LSB into a 16-bit value
@@ -410,10 +419,11 @@ public class MPU9250Gyro {
 		sumCount++;
 	}
 
-	void initAK8963(float destination)
+	void initAK8963(float[] destination)
 	{
 	  // First extract the factory calibration for each magnetometer axis
-	  int rawData[3];  // x/y/z gyro calibration data stored here
+		  int[] rawData = new int[3];
+		  // x/y/z gyro calibration data stored here
 	  // TODO: Test this!! Likely doesn't work
 	  writeByte(AK8963_ADDRESS, AK8963_CNTL, 0x00); // Power down magnetometer
 	  wait(10);
@@ -421,12 +431,12 @@ public class MPU9250Gyro {
 	  wait(10);
 	  
 	  // Read the x-, y-, and z-axis calibration values
-	  readBytes(AK8963_ADDRESS, AK8963_ASAX, 3, &rawData[0]);
+	  readBytes(AK8963_ADDRESS, AK8963_ASAX, 3, rawData[0]);
 
 	  // Return x-axis sensitivity adjustment values, etc.
-	  destination[0] =  (float)(rawData[0] - 128)/256. + 1.;
-	  destination[1] =  (float)(rawData[1] - 128)/256. + 1.;
-	  destination[2] =  (float)(rawData[2] - 128)/256. + 1.;
+	  destination[0] =  (float) ((rawData[0] - 128)/256. + 1.);
+	  destination[1] =  (float) ((rawData[1] - 128)/256. + 1.);
+	  destination[2] =  (float) ((rawData[2] - 128)/256. + 1.);
 	  writeByte(AK8963_ADDRESS, AK8963_CNTL, 0x00); // Power down magnetometer
 	  wait(10);
 
@@ -537,9 +547,10 @@ public class MPU9250Gyro {
 	// registers.
 	void calibrateMPU9250(float gyroBias, float accelBias)
 	{
-	  int data[12]; // data array to hold accelerometer and gyro x, y, z, data
+	  int[] data = new int[12]; // data array to hold accelerometer and gyro x, y, z, data
 	  int ii, packet_count, fifo_count;
-	  int gyro_bias[3]  = {0, 0, 0}, accel_bias[3] = {0, 0, 0};
+	  int[] gyro_bias  = {0, 0, 0};
+	  int[] accel_bias = {0, 0, 0};
 
 	  // reset device
 	  // Write a one to bit 7 reset bit; toggle reset device
@@ -591,16 +602,17 @@ public class MPU9250Gyro {
 	  // Disable gyro and accelerometer sensors for FIFO
 	  writeByte(MPU9250_ADDRESS, FIFO_EN, 0x00);
 	  // Read FIFO sample count
-	  readBytes(MPU9250_ADDRESS, FIFO_COUNTH, 2, &data[0]);
+	  readBytes(MPU9250_ADDRESS, FIFO_COUNTH, 2, data[0]);
 	  fifo_count = ((int)data[0] << 8) | data[1];
 	  // How many sets of full gyro and accelerometer data for averaging
 	  packet_count = fifo_count/12;
 
 	  for (ii = 0; ii < packet_count; ii++)
 	  {
-	    int accel_temp[3] = {0, 0, 0}, gyro_temp[3] = {0, 0, 0};
+	    int[] accel_temp = {0, 0, 0};
+	    int[] gyro_temp = {0, 0, 0};
 	    // Read data for averaging
-	    readBytes(MPU9250_ADDRESS, FIFO_R_W, 12, &data[0]);
+	    readBytes(MPU9250_ADDRESS, FIFO_R_W, 12, data[0]);
 	    // Form signed 16-bit integer for each sample in FIFO
 	    accel_temp[0] = (int) (((int)data[0] << 8) | data[1]  );
 	    accel_temp[1] = (int) (((int)data[2] << 8) | data[3]  );
@@ -670,20 +682,20 @@ public class MPU9250Gyro {
 	  // the accelerometer biases calculated above must be divided by 8.
 
 	  // A place to hold the factory accelerometer trim biases
-	  int accel_bias_reg[3] = {0, 0, 0};
+	  int[] accel_bias_reg = {0, 0, 0};
 	  // Read factory accelerometer trim values
-	  readBytes(MPU9250_ADDRESS, XA_OFFSET_H, 2, &data[0]);
+	  readBytes(MPU9250_ADDRESS, XA_OFFSET_H, 2, data[0]);
 	  accel_bias_reg[0] = (int) (((int)data[0] << 8) | data[1]);
-	  readBytes(MPU9250_ADDRESS, YA_OFFSET_H, 2, &data[0]);
+	  readBytes(MPU9250_ADDRESS, YA_OFFSET_H, 2, data[0]);
 	  accel_bias_reg[1] = (int) (((int)data[0] << 8) | data[1]);
-	  readBytes(MPU9250_ADDRESS, ZA_OFFSET_H, 2, &data[0]);
+	  readBytes(MPU9250_ADDRESS, ZA_OFFSET_H, 2, data[0]);
 	  accel_bias_reg[2] = (int) (((int)data[0] << 8) | data[1]);
 
 	  // Define mask for temperature compensation bit 0 of lower byte of
 	  // accelerometer bias registers
-	  int mask = 1uL;
+	  int mask = 1;
 	  // Define array to hold mask bit for each accelerometer bias axis
-	  int mask_bit[3] = {0, 0, 0};
+	  int[] mask_bit = {0, 0, 0};
 
 	  for (ii = 0; ii < 3; ii++)
 	  {
@@ -739,12 +751,14 @@ public class MPU9250Gyro {
 	// Should return percent deviation from factory trim values, +/- 14 or
 	// less
 	// deviation is a pass.
-	void MPU9250SelfTest(float destination)
+	void MPU9250SelfTest(float[] destination)
 	{
-	  int rawData[6] = {0, 0, 0, 0, 0, 0};
-	  int selfTest[6];
+	  int[] rawData = {0, 0, 0, 0, 0, 0};
+	  int[] selfTest = new int[6];
+	  //TODO ??? help
 	  int gAvg[3] = {0}, aAvg[3] = {0}, aSTAvg[3] = {0}, gSTAvg[3] = {0};
-	  float factoryTrim[6];
+	  float[] factoryTrim = new float[6];
+
 	  int FS = 0;
 
 	  // Set gyro sample rate to 1 kHz
@@ -761,17 +775,17 @@ public class MPU9250Gyro {
 	  // Get average current values of gyro and acclerometer
 	  for (int ii = 0; ii < 200; ii++)
 	  {
-	Serial.print("BHW::ii = ");
-	Serial.println(ii);
+	System.out.println("BHW::ii = ");
+	System.out.println(ii);
 	    // Read the six raw data registers into data array
-	    readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]);
+	    readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, rawData[0]);
 	    // Turn the MSB and LSB into a signed 16-bit value
 	    aAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ;
 	    aAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
 	    aAvg[2] += (int)(((int)rawData[4] << 8) | rawData[5]) ;
 
 	    // Read the six raw data registers sequentially into data array
-	    readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, &rawData[0]);
+	    readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, rawData[0]);
 	    // Turn the MSB and LSB into a signed 16-bit value
 	    gAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ;
 	    gAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
@@ -796,14 +810,14 @@ public class MPU9250Gyro {
 	  for (int ii = 0; ii < 200; ii++)
 	  {
 	    // Read the six raw data registers into data array
-	    readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]);
+	    readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, rawData[0]);
 	    // Turn the MSB and LSB into a signed 16-bit value
 	    aSTAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ;
 	    aSTAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
 	    aSTAvg[2] += (int)(((int)rawData[4] << 8) | rawData[5]) ;
 
 	    // Read the six raw data registers sequentially into data array
-	    readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, &rawData[0]);
+	    readBytes(MPU9250_ADDRESS, GYRO_XOUT_H, 6, rawData[0]);
 	    // Turn the MSB and LSB into a signed 16-bit value
 	    gSTAvg[0] += (int)(((int)rawData[0] << 8) | rawData[1]) ;
 	    gSTAvg[1] += (int)(((int)rawData[2] << 8) | rawData[3]) ;
@@ -838,17 +852,17 @@ public class MPU9250Gyro {
 
 	  // Retrieve factory self-test value from self-test code reads
 	  // FT[Xa] factory trim calculation
-	  factoryTrim[0] = (float)(2620/1<<FS)*(pow(1.01 ,((float)selfTest[0] - 1.0) ));
+	  factoryTrim[0] = (float) ((float)(2620/1<<FS)*(Math.pow(1.01 ,((float)selfTest[0] - 1.0) )));
 	  // FT[Ya] factory trim calculation
-	  factoryTrim[1] = (float)(2620/1<<FS)*(pow(1.01 ,((float)selfTest[1] - 1.0) ));
+	  factoryTrim[1] = (float) ((float)(2620/1<<FS)*(Math.pow(1.01 ,((float)selfTest[1] - 1.0) )));
 	  // FT[Za] factory trim calculation
-	  factoryTrim[2] = (float)(2620/1<<FS)*(pow(1.01 ,((float)selfTest[2] - 1.0) ));
+	  factoryTrim[2] = (float) ((float)(2620/1<<FS)*(Math.pow(1.01 ,((float)selfTest[2] - 1.0) )));
 	  // FT[Xg] factory trim calculation
-	  factoryTrim[3] = (float)(2620/1<<FS)*(pow(1.01 ,((float)selfTest[3] - 1.0) ));
+	  factoryTrim[3] = (float) ((float)(2620/1<<FS)*(Math.pow(1.01 ,((float)selfTest[3] - 1.0) )));
 	  // FT[Yg] factory trim calculation
-	  factoryTrim[4] = (float)(2620/1<<FS)*(pow(1.01 ,((float)selfTest[4] - 1.0) ));
+	  factoryTrim[4] = (float) ((float)(2620/1<<FS)*(Math.pow(1.01 ,((float)selfTest[4] - 1.0) )));
 	  // FT[Zg] factory trim calculation
-	  factoryTrim[5] = (float)(2620/1<<FS)*(pow(1.01 ,((float)selfTest[5] - 1.0) ));
+	  factoryTrim[5] = (float) ((float)(2620/1<<FS)*(Math.pow(1.01 ,((float)selfTest[5] - 1.0) )));
 
 	  // Report results as a ratio of (STR - FT)/FT; the change from Factory Trim
 	  // of the Self-Test Response
@@ -856,32 +870,31 @@ public class MPU9250Gyro {
 	  for (int i = 0; i < 3; i++)
 	  {
 	    // Report percent differences
-	    destination[i] = 100.0 * ((float)(aSTAvg[i] - aAvg[i])) / factoryTrim[i]
-	      - 100.;
+	    destination[i] = (float) (100.0 * ((float)(aSTAvg[i] - aAvg[i])) / factoryTrim[i]
+	      - 100.);
 	    // Report percent differences
-	    destination[i+3] = 100.0*((float)(gSTAvg[i] - gAvg[i]))/factoryTrim[i+3]
-	      - 100.;
+	    destination[i+3] = (float) (100.0*((float)(gSTAvg[i] - gAvg[i]))/factoryTrim[i+3]
+	      - 100.);
 	  }
 	}
 
 	// Function which accumulates magnetometer data after device
 	// initialization.
 	// It calculates the bias and scale in the x, y, and z axes.
-	void magCalMPU9250(float bias_dest, float scale_dest)
+	void magCalMPU9250(float[] bias_dest, float[] scale_dest)
 	{
 	  int ii = 0, sample_count = 0;
-	  int mag_bias[3]  = {0, 0, 0},
-	          mag_scale[3] = {0, 0, 0};
-	  int mag_max[3]  = {0x8000, 0x8000, 0x8000},
-	          mag_min[3]  = {0x7FFF, 0x7FFF, 0x7FFF},
-	          mag_temp[3] = {0, 0, 0};
+	  int[] mag_bias  = {0, 0, 0};
+	  int[] mag_scale = {0, 0, 0};
+	  int[] mag_max  = {0x8000, 0x8000, 0x8000};
+	  int[] mag_min  = {0x7FFF, 0x7FFF, 0x7FFF};
+	  int[] mag_temp = {0, 0, 0};
 
 	  // Make sure resolution has been calculated
 	  getMres();
 
-	  Serial.println(F("Mag Calibration: Wave device in a figure 8 until done!"));
-	  Serial.println(
-	      F("  4 seconds to get ready followed by 15 seconds of sampling)"));
+	  System.out.println(("Mag Calibration: Wave device in a figure 8 until done!"));
+	  System.out.println(("  4 seconds to get ready followed by 15 seconds of sampling)"));
 	  wait(4000);
 
 	  // shoot for ~fifteen seconds of mag data
@@ -954,7 +967,7 @@ public class MPU9250Gyro {
 	  scale_dest[1] = avg_rad / ((float)mag_scale[1]);
 	  scale_dest[2] = avg_rad / ((float)mag_scale[2]);
 
-	  Serial.println(F("Mag Calibration done!"));
+	  System.out.println(("Mag Calibration done!"));
 	}
 
 	// Wire.h read and write protocols
@@ -971,20 +984,22 @@ public class MPU9250Gyro {
 
 			SPI.beginTransaction(SPISettings(SPI_DATA_RATE,MSBFIRST,SPI_MODE));select();
 
-			SPI.transfer(registerAddress);returnVal=SPI.transfer(writeData);
+			SPI.transfer(registerAddress);
+			returnVal=SPI.transfer(writeData);
 
-			deselect();SPI.endTransaction();#ifdef SERIAL_DEBUG Serial.print("writeByteSPI slave returned: 0x");Serial.println(returnVal,HEX);#endif return returnVal;
+			deselect();
+			SPI.endTransaction();
+			return returnVal;
 		}
 
 	int writeByteWire(int deviceAddress, int registerAddress, int data) {
-		comms.
-		Wire.beginTransmission(deviceAddress); // Initialize the Tx buffer
-		Wire.write(registerAddress); // Put slave register address in Tx
+		comms.write(registerAddress, data);
+		// Put slave register address in Tx
 										// buffer
-		Wire.write(data); // Put data in Tx buffer
-		Wire.endTransmission(); // Send the Tx buffer
+		// Put data in Tx buffer
+		// Send the Tx buffer
 		// TODO: Fix this to return something meaningful
-		return NULL;
+		return 0;
 	}
 
 	// Read a byte from given register on device. Calls necessary SPI or I2C
@@ -1001,16 +1016,16 @@ public class MPU9250Gyro {
 	int readByteWire(int deviceAddress, int registerAddress) {
 		int data; // `data` will store the register data
 
-		// Initialize the Tx buffer
+		// TODO Initialize the Tx buffer
 		Wire.beginTransmission(deviceAddress);
-		// Put slave register address in Tx buffer
+		// TODO Put slave register address in Tx buffer
 		Wire.write(registerAddress);
-		// Send the Tx buffer, but send a restart to keep connection alive
+		// TODO Send the Tx buffer, but send a restart to keep connection alive
 		Wire.endTransmission(false);
-		// Read one byte from slave register address
+		// TODO Read one byte from slave register address
 		Wire.requestFrom(deviceAddress, (int) 1);
 		// Fill Rx buffer with result
-		data = Wire.read();
+		data = comms.read(deviceAddress, data, buffer);
 		// Return data read from slave register
 		return data;
 	}
@@ -1051,14 +1066,14 @@ public class MPU9250Gyro {
 		digitalWrite(_csPin, HIGH);
 	}
 
-	int readBytesSPI(int registerAddress, int count,int dest) {
+	int readBytesSPI(int registerAddress, int count,int[] dest) {
 			SPI.beginTransaction(SPISettings(SPI_DATA_RATE,MSBFIRST,SPI_MODE));select();
 
 			SPI.transfer(registerAddress|READ_FLAG);
 
 			int i;
 
-			for(i=0;i<count;i++){dest[i]=SPI.transfer(0x00);#ifdef SERIAL_DEBUG Serial.print("readBytesSPI::Read byte: 0x");Serial.println(dest[i],HEX);#endif}
+			for(i=0;i<count;i++){dest[i]=SPI.transfer(0x00);}
 
 			SPI.endTransaction();deselect();
 
@@ -1099,7 +1114,7 @@ public class MPU9250Gyro {
 		}
 	}
 
-	bool magInit() {
+	boolean magInit() {
 			// Reset registers to defaults, bit auto clears
 			writeByteSPI(0x6B,0x80);
 			// Auto select the best available clock source
@@ -1139,9 +1154,8 @@ public class MPU9250Gyro {
 			// Enable simple 1-byte I2C reads from slave 0
 			writeByteSPI(0x27,0x81);
 
-			// TODO: Remove this code
-			int ret=ak8963WhoAmI_SPI();#ifdef SERIAL_DEBUG Serial.print("magInit to return ");Serial.println((ret==0x48)?"true":"false");#endif return ret==0x48;
-		}
+			
+	}
 
 	// Write a null byte w/o CS assertion to get SPI hardware to idle high
 	// (mode 3)
@@ -1151,7 +1165,7 @@ public class MPU9250Gyro {
 		SPI.endTransaction();
 	}
 
-	bool begin() {
+	boolean begin() {
 		kickHardware();
 		return magInit();
 	}
@@ -1165,14 +1179,6 @@ public class MPU9250Gyro {
 	  oldSlaveAddress  = readByteSPI(I2C_SLV0_ADDR);
 	  oldSlaveRegister = readByteSPI(I2C_SLV0_REG);
 	  oldSlaveConfig   = readByteSPI(I2C_SLV0_CTRL);
-	#ifdef SERIAL_DEBUG
-	  Serial.print("Old slave address: 0x");
-	  Serial.println(oldSlaveAddress, HEX);
-	  Serial.print("Old slave register: 0x");
-	  Serial.println(oldSlaveRegister, HEX);
-	  Serial.print("Old slave config: 0x");
-	  Serial.println(oldSlaveConfig, HEX);
-	#endif
 
 	  // Set the I2C slave addres of AK8963 and set for read
 	  response = writeByteSPI(I2C_SLV0_ADDR, AK8963_ADDRESS|READ_FLAG);
@@ -1190,6 +1196,7 @@ public class MPU9250Gyro {
 	  writeByteSPI(I2C_SLV0_CTRL, oldSlaveConfig);
 
 	  return response;
+	}
 	/*private static final double kSamplePeriod = 0.001;
 	private static final double kCalibrationSampleTime = 5.0;
 	private static final double kDegreePerSecondPerLSB = 0.0125;

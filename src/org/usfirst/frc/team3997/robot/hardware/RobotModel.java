@@ -12,6 +12,7 @@ public class RobotModel {
 	public Talon gearTilterMotor, gearIntakeMotor;
 	public Encoder leftDriveEncoder, rightDriveEncoder;
 	public Potentiometer gearPot;
+	public AnalogGyro gyro;
 	//public CameraServer camera;
 	public Timer timer;
 
@@ -60,6 +61,8 @@ public class RobotModel {
 
 		timer = new Timer();
 		timer.start();
+		
+		gyro = new AnalogGyro();
 		// TODO add real url
 		//camera.addServer("Server");
 
@@ -179,10 +182,11 @@ public class RobotModel {
 	}
 
 	public void resetGyro() {
+		gyro.reset();
 	}
 
 	public double getAngle() {
-		return 0;
+		return gyro.getAngle();
 	}
 
 	public void setLeftMotors(double output) {
