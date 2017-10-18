@@ -3,6 +3,7 @@ package org.usfirst.frc.team3997.robot.controllers;
 import java.io.File;
 
 import org.usfirst.frc.team3997.robot.Params;
+import org.usfirst.frc.team3997.robot.hardware.MPU9250Gyro;
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
 
 import jaci.pathfinder.*;
@@ -84,11 +85,11 @@ public void setUp(Trajectory trajectoryInput) {
 			double l = left.calculate(robot.leftDriveEncoder.get());
 			double r = left.calculate(robot.rightDriveEncoder.get());
 			
+			
 			double gyro_heading = robot.getAngle();
 			double desired_heading = Pathfinder.r2d(left.getHeading());
 			double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 			double turn = 0.8 * (-1.0 / 80) * angleDifference;
-	
 			robot.setLeftMotors(l + turn);
 			robot.setRightMotors(r - turn);
 		}
