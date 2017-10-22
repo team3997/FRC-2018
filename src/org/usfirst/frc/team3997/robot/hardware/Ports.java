@@ -45,6 +45,6 @@ public class Ports {
 
 	public static final int DRIVE_DIRECTION_BUTTON_PORT           = 9;
 	public static final int SHOOTER_RUN_BUTTON_PORT               = 1;
-	public static final int GYRO_PORT = null;
+	public static final int GYRO_PORT = 0;
 
 }

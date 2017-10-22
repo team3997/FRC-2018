@@ -12,7 +12,7 @@ public class RobotModel {
 	public Talon gearTilterMotor, gearIntakeMotor;
 	public Encoder leftDriveEncoder, rightDriveEncoder;
 	public Potentiometer gearPot;
-	public AnalogGyro gyro;
+	public MPU9250Gyro gyro;
 	//public CameraServer camera;
 	public Timer timer;
 
@@ -62,11 +62,13 @@ public class RobotModel {
 		timer = new Timer();
 		timer.start();
 		
-		gyro = new AnalogGyro();
+		gyro = MPU9250Gyro();
 		// TODO add real url
 		//camera.addServer("Server");
 
 	}
+
+	
 
 	public enum Wheels {
 		LeftWheels, RightWheels, AllWheels
