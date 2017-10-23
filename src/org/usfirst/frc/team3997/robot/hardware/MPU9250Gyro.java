@@ -503,7 +503,7 @@ public class MPU9250Gyro extends GyroBase {
 	    sum += deltat;
 	    sumCount++;
 	    
-	    MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, mx, my, mz);
+	    MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, 0, 0, 0);
 
 	}
 
