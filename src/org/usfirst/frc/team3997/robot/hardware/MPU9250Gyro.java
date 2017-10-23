@@ -17,7 +17,7 @@ import java.lang.Math;
  * @author peter
  *
  */
-public class MPU9250Gyro {
+public class MPU9250Gyro extends GyroBase {
 
 	// ==============================================================================
 	// ====== Set of useful function to access acceleration. gyroscope,
@@ -44,42 +44,40 @@ public class MPU9250Gyro {
 	private int AK8963_ZOUT_L;
 	private int AK8963_ZOUT_H;
 	private int AK8963_ST2; // Data overflow bit 3 and data read
-										// error status bit 2
+							// error status bit 2
 	private int AK8963_CNTL;// Power down (0000), single-measurement
-										// (0001), self-test (1000) and Fuse ROM
-										// (1111) modes on bits 3:0
+							// (0001), self-test (1000) and Fuse ROM
+							// (1111) modes on bits 3:0
 	private int AK8963_ASTC; // Self test control
 	private int AK8963_I2CDIS; // I2C disable
 	private int AK8963_ASAX; // Fuse ROM x-axis sensitivity
-											// adjustment value
+								// adjustment value
 	private int AK8963_ASAY; // Fuse ROM y-axis sensitivity
-											// adjustment value
+								// adjustment value
 	private int AK8963_ASAZ; // Fuse ROM z-axis sensitivity
-											// adjustment value
+								// adjustment value
 
 	private int SELF_TEST_X_GYRO;
 	private int SELF_TEST_Y_GYRO;
 	private int SELF_TEST_Z_GYRO;
 
 	/*
-	 * private int X_FINE_GAIN = 0x03 // [7:0] fine gain private int
-	 * Y_FINE_GAIN = 0x04 private int Z_FINE_GAIN = 0x05 private int
-	 * XA_OFFSET_H = 0x06 // User-defined trim values for accelerometer static
-	 * final int XA_OFFSET_L_TC = 0x07 private int YA_OFFSET_H = 0x08
-	 * private int YA_OFFSET_L_TC = 0x09 private int ZA_OFFSET_H =
-	 * 0x0A private int ZA_OFFSET_L_TC = 0x0B
+	 * private int X_FINE_GAIN = 0x03 // [7:0] fine gain private int Y_FINE_GAIN
+	 * = 0x04 private int Z_FINE_GAIN = 0x05 private int XA_OFFSET_H = 0x06 //
+	 * User-defined trim values for accelerometer static final int
+	 * XA_OFFSET_L_TC = 0x07 private int YA_OFFSET_H = 0x08 private int
+	 * YA_OFFSET_L_TC = 0x09 private int ZA_OFFSET_H = 0x0A private int
+	 * ZA_OFFSET_L_TC = 0x0B
 	 */
-
 
 	private int SELF_TEST_X_ACCEL;
 	private int SELF_TEST_Y_ACCEL;
 	private int SELF_TEST_Z_ACCEL;
 
-
 	private int SELF_TEST_A;
 
 	private int XG_OFFSET_H; // User-defined trim values for
-											// gyroscope
+								// gyroscope
 	private int XG_OFFSET_L;
 	private int YG_OFFSET_H;
 	private int YG_OFFSET_L;
@@ -94,13 +92,13 @@ public class MPU9250Gyro {
 	private int WOM_THR;
 
 	private int MOT_DUR; // Duration counter threshold for motion
-										// interrupt generation, 1 kHz rate, LSB
-										// = 1 ms
+							// interrupt generation, 1 kHz rate, LSB
+							// = 1 ms
 	private int ZMOT_THR; // Zero-motion detection threshold bits
-										// [7:0]
+							// [7:0]
 	private int ZRMOT_DUR; // Duration counter threshold for zero
-										// motion interrupt generation, 16 Hz
-										// rate, LSB = 64 ms
+							// motion interrupt generation, 16 Hz
+							// rate, LSB = 64 ms
 
 	private int FIFO_EN;
 	private int I2C_MST_CTRL;
@@ -177,9 +175,9 @@ public class MPU9250Gyro {
 	private int PWR_MGMT_2;
 	private int DMP_BANK; // Activates a specific bank in the DMP
 	private int DMP_RW_PNT; // Set read/write pointer to a specific
-										// start address in specified DMP bank
+							// start address in specified DMP bank
 	private int DMP_REG; // Register in DMP from which to read or to
-										// which to write
+							// which to write
 	private int DMP_REG_1;
 	private int DMP_REG_2;
 	private int FIFO_COUNTH;
@@ -194,21 +192,20 @@ public class MPU9250Gyro {
 	private int ZA_OFFSET_L;
 
 	/*
-	 * private int X_FINE_GAIN = 0x03 // [7:0] fine gain private int
-	 * Y_FINE_GAIN = 0x04 private int Z_FINE_GAIN = 0x05 private int
-	 * XA_OFFSET_H = 0x06 // User-defined trim values for accelerometer static
-	 * final int XA_OFFSET_L_TC = 0x07 private int YA_OFFSET_H = 0x08
-	 * private int YA_OFFSET_L_TC = 0x09 private int ZA_OFFSET_H =
-	 * 0x0A private int ZA_OFFSET_L_TC = 0x0B
+	 * private int X_FINE_GAIN = 0x03 // [7:0] fine gain private int Y_FINE_GAIN
+	 * = 0x04 private int Z_FINE_GAIN = 0x05 private int XA_OFFSET_H = 0x06 //
+	 * User-defined trim values for accelerometer static final int
+	 * XA_OFFSET_L_TC = 0x07 private int YA_OFFSET_H = 0x08 private int
+	 * YA_OFFSET_L_TC = 0x09 private int ZA_OFFSET_H = 0x0A private int
+	 * ZA_OFFSET_L_TC = 0x0B
 	 */
-
 
 	// Using the MSENSR-9250 breakout board, ADO is set to 0
 	// Seven-bit device address is 110100 for ADO = 0 and 110101 for ADO = 1
 	// mbed uses the eight-bit device address, so shift seven-bit addresses left
 	// by one!
 	private int ADO;
-	
+
 	// Set initial input parameters TODO HELP
 	public enum Ascale {
 		AFS_2G, AFS_4G, AFS_8G, AFS_16G;
@@ -218,243 +215,298 @@ public class MPU9250Gyro {
 		GFS_250DPS, GFS_500DPS, GFS_1000DPS, GFS_2000DPS;
 	}
 
-	
-	/*Ascale ascale =Ascale.;
-	Gscale gscale;
-	Mscale mscale;*/
+	/*
+	 * Ascale ascale =Ascale.; Gscale gscale; Mscale mscale;
+	 */
 	Ascale ascale; // AFS_2G, AFS_4G, AFS_8G, AFS_16G
 	Gscale gscale; // GFS_250DPS, GFS_500DPS, GFS_1000DPS,
 	// GFS_2000DPS
-															// ODR
+	// ODR
 	float aRes, gRes; // scale resolutions per LSB for the sensors
 	byte aReg, gReg; // Register setting for rate/range
 	// Set up I2C, (SDA,SCL)
 	I2C i2c;
-	    
-	int[] accelCount;  // Stores the 16-bit signed accelerometer sensor output
-	int[] gyroCount;   // Stores the 16-bit signed gyro sensor output
-	float[] gyroBias = {0, 0, 0}; 
-	float[] accelBias = {0, 0, 0}; // Bias corrections for gyro and accelerometer
-	float[] ax, ay, az, gx, gy, gz; // variables to hold latest sensor data values 
-	int tempCount;   // Stores the real internal chip temperature in degrees Celsius
+
+	int[] accelCount; // Stores the 16-bit signed accelerometer sensor output
+	int[] gyroCount; // Stores the 16-bit signed gyro sensor output
+	float[] gyroBias = { 0, 0, 0 };
+	float[] accelBias = { 0, 0, 0 }; // Bias corrections for gyro and
+										// accelerometer
+	float ax, ay, az, gx, gy, gz; // variables to hold latest sensor data values
+	int tempCount; // Stores the real internal chip temperature in degrees
+					// Celsius
 	float temperature;
 	float[] SelfTest;
 
 	int delt_t; // used to control display output rate
-	int count;  // used to control display output rate
+	int count; // used to control display output rate
 
 	// parameters for 6 DoF sensor fusion calculations
 	float PI;
-	float GyroMeasError;     // gyroscope measurement error in rads/s (start at 60 deg/s), then reduce after ~10 s to 3
-	float beta;  // compute beta
-	float GyroMeasDrift;      // gyroscope measurement drift in rad/s/s (start at 0.0 deg/s/s)
-	float zeta;  // compute zeta, the other free parameter in the Madgwick scheme usually set to a small or zero value
-	float Kp; // these are the free parameters in the Mahony filter and fusion scheme, Kp for proportional feedback, Ki for integral
+	float GyroMeasError; // gyroscope measurement error in rads/s (start at 60
+							// deg/s), then reduce after ~10 s to 3
+	float beta; // compute beta
+	float GyroMeasDrift; // gyroscope measurement drift in rad/s/s (start at 0.0
+							// deg/s/s)
+	float zeta; // compute zeta, the other free parameter in the Madgwick scheme
+				// usually set to a small or zero value
+	float Kp; // these are the free parameters in the Mahony filter and fusion
+				// scheme, Kp for proportional feedback, Ki for integral
 	float Ki;
 
-	float pitch, yaw, roll;
-	float deltat;                             // integration interval for both filter schemes
-	int lastUpdate, firstUpdate, Now;    // used to calculate integration interval                               // used to calculate integration interval
-	float[] eInt = {0.0f, 0.0f, 0.0f};
-	float[] q = {1.0f, 0.0f, 0.0f, 0.0f};           // vector to hold quaternion
-
+	double pitch, yaw, roll;
+	float deltat; // integration interval for both filter schemes
+	int lastUpdate, firstUpdate, Now; // used to calculate integration interval
+										// // used to calculate integration
+	Timer t;									// interval
+	float[] eInt = { 0.0f, 0.0f, 0.0f };
+	float[] q = { 1.0f, 0.0f, 0.0f, 0.0f }; // vector to hold quaternion
+	
+	float sum;
+	long sumCount;
 	// vector to hold integral error for Mahony method
-	  //===================================================================================================================
-	//====== Set of useful function to access acceleration, gyroscope, and temperature data
-	//===================================================================================================================
+	// ===================================================================================================================
+	// ====== Set of useful function to access acceleration, gyroscope, and
+	// temperature data
+	// ===================================================================================================================
 
 	public MPU9250Gyro() {
+		sum = 0;
+		sumCount = 0;
 		i2c = new I2C(Port.kOnboard, MPU9250_ADDRESS);
-		
-		 MPU9250_ADDRESS = 0x69;
 
-		 AK8963_ADDRESS = 0x0C << 1;
-		 AK8963_WHO_AM_I = 0x00; // should return = 0x48
-		 AK8963_INFO = 0x01;
-		 AK8963_ST1 = 0x02; // data ready status bit 0
-		 AK8963_XOUT_L = 0x03; // data
-		 AK8963_XOUT_H = 0x04;
-		 AK8963_YOUT_L = 0x05;
-		 AK8963_YOUT_H = 0x06;
-		 AK8963_ZOUT_L = 0x07;
-		 AK8963_ZOUT_H = 0x08;
-		 AK8963_ST2 = 0x09; // Data overflow bit 3 and data read
-											// error status bit 2
-		 AK8963_CNTL = 0x0A;// Power down (0000), single-measurement
-											// (0001), self-test (1000) and Fuse ROM
-											// (1111) modes on bits 3:0
-		 AK8963_ASTC = 0x0C; // Self test control
-		 AK8963_I2CDIS = 0x0F; // I2C disable
-		 AK8963_ASAX = 0x10; // Fuse ROM x-axis sensitivity
-												// adjustment value
-		 AK8963_ASAY = 0x11; // Fuse ROM y-axis sensitivity
-												// adjustment value
-		 AK8963_ASAZ = 0x12; // Fuse ROM z-axis sensitivity
-												// adjustment value
+		MPU9250_ADDRESS = 0x69;
 
-		 SELF_TEST_X_GYRO = 0x00;
-		 SELF_TEST_Y_GYRO = 0x01;
-		 SELF_TEST_Z_GYRO = 0x02;
+		AK8963_ADDRESS = 0x0C << 1;
+		AK8963_WHO_AM_I = 0x00; // should return = 0x48
+		AK8963_INFO = 0x01;
+		AK8963_ST1 = 0x02; // data ready status bit 0
+		AK8963_XOUT_L = 0x03; // data
+		AK8963_XOUT_H = 0x04;
+		AK8963_YOUT_L = 0x05;
+		AK8963_YOUT_H = 0x06;
+		AK8963_ZOUT_L = 0x07;
+		AK8963_ZOUT_H = 0x08;
+		AK8963_ST2 = 0x09; // Data overflow bit 3 and data read
+							// error status bit 2
+		AK8963_CNTL = 0x0A;// Power down (0000), single-measurement
+							// (0001), self-test (1000) and Fuse ROM
+							// (1111) modes on bits 3:0
+		AK8963_ASTC = 0x0C; // Self test control
+		AK8963_I2CDIS = 0x0F; // I2C disable
+		AK8963_ASAX = 0x10; // Fuse ROM x-axis sensitivity
+							// adjustment value
+		AK8963_ASAY = 0x11; // Fuse ROM y-axis sensitivity
+							// adjustment value
+		AK8963_ASAZ = 0x12; // Fuse ROM z-axis sensitivity
+							// adjustment value
+
+		SELF_TEST_X_GYRO = 0x00;
+		SELF_TEST_Y_GYRO = 0x01;
+		SELF_TEST_Z_GYRO = 0x02;
 
 		/*
-		 *  X_FINE_GAIN = 0x03 // [7:0] fine gain 
-		 * Y_FINE_GAIN = 0x04  Z_FINE_GAIN = 0x05 
-		 * XA_OFFSET_H = 0x06 // User-defined trim values for accelerometer static
-		 * final int XA_OFFSET_L_TC = 0x07  YA_OFFSET_H = 0x08
-		 *  YA_OFFSET_L_TC = 0x09  ZA_OFFSET_H =
-		 * 0x0A  ZA_OFFSET_L_TC = 0x0B
+		 * X_FINE_GAIN = 0x03 // [7:0] fine gain Y_FINE_GAIN = 0x04 Z_FINE_GAIN
+		 * = 0x05 XA_OFFSET_H = 0x06 // User-defined trim values for
+		 * accelerometer static final int XA_OFFSET_L_TC = 0x07 YA_OFFSET_H =
+		 * 0x08 YA_OFFSET_L_TC = 0x09 ZA_OFFSET_H = 0x0A ZA_OFFSET_L_TC = 0x0B
 		 */
 
-		 SELF_TEST_X_ACCEL = 0x0D;
-		 SELF_TEST_Y_ACCEL = 0x0E;
-		 SELF_TEST_Z_ACCEL = 0x0F;
+		SELF_TEST_X_ACCEL = 0x0D;
+		SELF_TEST_Y_ACCEL = 0x0E;
+		SELF_TEST_Z_ACCEL = 0x0F;
 
-		 SELF_TEST_A = 0x10;
+		SELF_TEST_A = 0x10;
 
-		 XG_OFFSET_H = 0x13; // User-defined trim values for
-												// gyroscope
-		 XG_OFFSET_L = 0x14;
-		 YG_OFFSET_H = 0x15;
-		 YG_OFFSET_L = 0x16;
-		 ZG_OFFSET_H = 0x17;
-		 ZG_OFFSET_L = 0x18;
-		 SMPLRT_DIV = 0x19;
-		 CONFIG = 0x1A;
-		 GYRO_CONFIG = 0x1B;
-		 ACCEL_CONFIG = 0x1C;
-		 ACCEL_CONFIG2 = 0x1D;
-		 LP_ACCEL_ODR = 0x1E;
-		 WOM_THR = 0x1F;
+		XG_OFFSET_H = 0x13; // User-defined trim values for
+							// gyroscope
+		XG_OFFSET_L = 0x14;
+		YG_OFFSET_H = 0x15;
+		YG_OFFSET_L = 0x16;
+		ZG_OFFSET_H = 0x17;
+		ZG_OFFSET_L = 0x18;
+		SMPLRT_DIV = 0x19;
+		CONFIG = 0x1A;
+		GYRO_CONFIG = 0x1B;
+		ACCEL_CONFIG = 0x1C;
+		ACCEL_CONFIG2 = 0x1D;
+		LP_ACCEL_ODR = 0x1E;
+		WOM_THR = 0x1F;
 
-		 MOT_DUR = 0x20; // Duration counter threshold for motion
-											// interrupt generation, 1 kHz rate, LSB
-											// = 1 ms
-		 ZMOT_THR = 0x21; // Zero-motion detection threshold bits
-											// [7:0]
-		 ZRMOT_DUR = 0x22; // Duration counter threshold for zero
-											// motion interrupt generation, 16 Hz
-											// rate, LSB = 64 ms
+		MOT_DUR = 0x20; // Duration counter threshold for motion
+						// interrupt generation, 1 kHz rate, LSB
+						// = 1 ms
+		ZMOT_THR = 0x21; // Zero-motion detection threshold bits
+							// [7:0]
+		ZRMOT_DUR = 0x22; // Duration counter threshold for zero
+							// motion interrupt generation, 16 Hz
+							// rate, LSB = 64 ms
 
-		 FIFO_EN = 0x23;
-		 I2C_MST_CTRL = 0x24;
-		 I2C_SLV0_ADDR = 0x25;
-		 I2C_SLV0_REG = 0x26;
-		 I2C_SLV0_CTRL = 0x27;
-		 I2C_SLV1_ADDR = 0x28;
-		 I2C_SLV1_REG = 0x29;
-		 I2C_SLV1_CTRL = 0x2A;
-		 I2C_SLV2_ADDR = 0x2B;
-		 I2C_SLV2_REG = 0x2C;
-		 I2C_SLV2_CTRL = 0x2D;
-		 I2C_SLV3_ADDR = 0x2E;
-		 I2C_SLV3_REG = 0x2F;
-		 I2C_SLV3_CTRL = 0x30;
-		 I2C_SLV4_ADDR = 0x31;
-		 I2C_SLV4_REG = 0x32;
-		 I2C_SLV4_DO = 0x33;
-		 I2C_SLV4_CTRL = 0x34;
-		 I2C_SLV4_DI = 0x35;
-		 I2C_MST_STATUS = 0x36;
-		 INT_PIN_CFG = 0x37;
-		 INT_ENABLE = 0x38;
-		 DMP_INT_STATUS = 0x39; // Check DMP interrupt
-		 INT_STATUS = 0x3A;
-		 ACCEL_XOUT_H = 0x3B;
-		 ACCEL_XOUT_L = 0x3C;
-		 ACCEL_YOUT_H = 0x3D;
-		 ACCEL_YOUT_L = 0x3E;
-		 ACCEL_ZOUT_H = 0x3F;
-		 ACCEL_ZOUT_L = 0x40;
-		 TEMP_OUT_H = 0x41;
-		 TEMP_OUT_L = 0x42;
-		 GYRO_XOUT_H = 0x43;
-		 GYRO_XOUT_L = 0x44;
-		 GYRO_YOUT_H = 0x45;
-		 GYRO_YOUT_L = 0x46;
-		 GYRO_ZOUT_H = 0x47;
-		 GYRO_ZOUT_L = 0x48;
-		 EXT_SENS_DATA_00 = 0x49;
-		 EXT_SENS_DATA_01 = 0x4A;
-		 EXT_SENS_DATA_02 = 0x4B;
-		 EXT_SENS_DATA_03 = 0x4C;
-		 EXT_SENS_DATA_04 = 0x4D;
-		 EXT_SENS_DATA_05 = 0x4E;
-		 EXT_SENS_DATA_06 = 0x4F;
-		 EXT_SENS_DATA_07 = 0x50;
-		 EXT_SENS_DATA_08 = 0x51;
-		 EXT_SENS_DATA_09 = 0x52;
-		 EXT_SENS_DATA_10 = 0x53;
-		 EXT_SENS_DATA_11 = 0x54;
-		 EXT_SENS_DATA_12 = 0x55;
-		 EXT_SENS_DATA_13 = 0x56;
-		 EXT_SENS_DATA_14 = 0x57;
-		 EXT_SENS_DATA_15 = 0x58;
-		 EXT_SENS_DATA_16 = 0x59;
-		 EXT_SENS_DATA_17 = 0x5A;
-		 EXT_SENS_DATA_18 = 0x5B;
-		 EXT_SENS_DATA_19 = 0x5C;
-		 EXT_SENS_DATA_20 = 0x5D;
-		 EXT_SENS_DATA_21 = 0x5E;
-		 EXT_SENS_DATA_22 = 0x5F;
-		 EXT_SENS_DATA_23 = 0x60;
-		 MOT_DETECT_STATUS = 0x61;
-		 I2C_SLV0_DO = 0x63;
-		 I2C_SLV1_DO = 0x64;
-		 I2C_SLV2_DO = 0x65;
-		 I2C_SLV3_DO = 0x66;
-		 I2C_MST_DELAY_CTRL = 0x67;
-		 SIGNAL_PATH_RESET = 0x68;
-		 MOT_DETECT_CTRL = 0x69;
-		 USER_CTRL = 0x6A; // Bit 7 enable DMP, bit 3 reset DMP
-		 PWR_MGMT_1 = 0x6B; // Device defaults to the SLEEP mode
-		 PWR_MGMT_2 = 0x6C;
-		 DMP_BANK = 0x6D; // Activates a specific bank in the DMP
-		 DMP_RW_PNT = 0x6E; // Set read/write pointer to a specific
-											// start address in specified DMP bank
-		 DMP_REG = 0x6F; // Register in DMP from which to read or to
-											// which to write
-		 DMP_REG_1 = 0x70;
-		 DMP_REG_2 = 0x71;
-		 FIFO_COUNTH = 0x72;
-		 FIFO_COUNTL = 0x73;
-		 FIFO_R_W = 0x74;
-		 WHO_AM_I_MPU9250 = 0x75;// Should return = 0x71
-		 XA_OFFSET_H = 0x77;
-		 XA_OFFSET_L = 0x78;
-		 YA_OFFSET_H = 0x7A;
-		 YA_OFFSET_L = 0x7B;
-		 ZA_OFFSET_H = 0x7D;
-		 ZA_OFFSET_L = 0x7E;
+		FIFO_EN = 0x23;
+		I2C_MST_CTRL = 0x24;
+		I2C_SLV0_ADDR = 0x25;
+		I2C_SLV0_REG = 0x26;
+		I2C_SLV0_CTRL = 0x27;
+		I2C_SLV1_ADDR = 0x28;
+		I2C_SLV1_REG = 0x29;
+		I2C_SLV1_CTRL = 0x2A;
+		I2C_SLV2_ADDR = 0x2B;
+		I2C_SLV2_REG = 0x2C;
+		I2C_SLV2_CTRL = 0x2D;
+		I2C_SLV3_ADDR = 0x2E;
+		I2C_SLV3_REG = 0x2F;
+		I2C_SLV3_CTRL = 0x30;
+		I2C_SLV4_ADDR = 0x31;
+		I2C_SLV4_REG = 0x32;
+		I2C_SLV4_DO = 0x33;
+		I2C_SLV4_CTRL = 0x34;
+		I2C_SLV4_DI = 0x35;
+		I2C_MST_STATUS = 0x36;
+		INT_PIN_CFG = 0x37;
+		INT_ENABLE = 0x38;
+		DMP_INT_STATUS = 0x39; // Check DMP interrupt
+		INT_STATUS = 0x3A;
+		ACCEL_XOUT_H = 0x3B;
+		ACCEL_XOUT_L = 0x3C;
+		ACCEL_YOUT_H = 0x3D;
+		ACCEL_YOUT_L = 0x3E;
+		ACCEL_ZOUT_H = 0x3F;
+		ACCEL_ZOUT_L = 0x40;
+		TEMP_OUT_H = 0x41;
+		TEMP_OUT_L = 0x42;
+		GYRO_XOUT_H = 0x43;
+		GYRO_XOUT_L = 0x44;
+		GYRO_YOUT_H = 0x45;
+		GYRO_YOUT_L = 0x46;
+		GYRO_ZOUT_H = 0x47;
+		GYRO_ZOUT_L = 0x48;
+		EXT_SENS_DATA_00 = 0x49;
+		EXT_SENS_DATA_01 = 0x4A;
+		EXT_SENS_DATA_02 = 0x4B;
+		EXT_SENS_DATA_03 = 0x4C;
+		EXT_SENS_DATA_04 = 0x4D;
+		EXT_SENS_DATA_05 = 0x4E;
+		EXT_SENS_DATA_06 = 0x4F;
+		EXT_SENS_DATA_07 = 0x50;
+		EXT_SENS_DATA_08 = 0x51;
+		EXT_SENS_DATA_09 = 0x52;
+		EXT_SENS_DATA_10 = 0x53;
+		EXT_SENS_DATA_11 = 0x54;
+		EXT_SENS_DATA_12 = 0x55;
+		EXT_SENS_DATA_13 = 0x56;
+		EXT_SENS_DATA_14 = 0x57;
+		EXT_SENS_DATA_15 = 0x58;
+		EXT_SENS_DATA_16 = 0x59;
+		EXT_SENS_DATA_17 = 0x5A;
+		EXT_SENS_DATA_18 = 0x5B;
+		EXT_SENS_DATA_19 = 0x5C;
+		EXT_SENS_DATA_20 = 0x5D;
+		EXT_SENS_DATA_21 = 0x5E;
+		EXT_SENS_DATA_22 = 0x5F;
+		EXT_SENS_DATA_23 = 0x60;
+		MOT_DETECT_STATUS = 0x61;
+		I2C_SLV0_DO = 0x63;
+		I2C_SLV1_DO = 0x64;
+		I2C_SLV2_DO = 0x65;
+		I2C_SLV3_DO = 0x66;
+		I2C_MST_DELAY_CTRL = 0x67;
+		SIGNAL_PATH_RESET = 0x68;
+		MOT_DETECT_CTRL = 0x69;
+		USER_CTRL = 0x6A; // Bit 7 enable DMP, bit 3 reset DMP
+		PWR_MGMT_1 = 0x6B; // Device defaults to the SLEEP mode
+		PWR_MGMT_2 = 0x6C;
+		DMP_BANK = 0x6D; // Activates a specific bank in the DMP
+		DMP_RW_PNT = 0x6E; // Set read/write pointer to a specific
+							// start address in specified DMP bank
+		DMP_REG = 0x6F; // Register in DMP from which to read or to
+						// which to write
+		DMP_REG_1 = 0x70;
+		DMP_REG_2 = 0x71;
+		FIFO_COUNTH = 0x72;
+		FIFO_COUNTL = 0x73;
+		FIFO_R_W = 0x74;
+		WHO_AM_I_MPU9250 = 0x75;// Should return = 0x71
+		XA_OFFSET_H = 0x77;
+		XA_OFFSET_L = 0x78;
+		YA_OFFSET_H = 0x7A;
+		YA_OFFSET_L = 0x7B;
+		ZA_OFFSET_H = 0x7D;
+		ZA_OFFSET_L = 0x7E;
 
 		// Using the MSENSR-9250 breakout board, ADO is set to 0
 		// Seven-bit device address is 110100 for ADO = 0 and 110101 for ADO = 1
-		// mbed uses the eight-bit device address, so shift seven-bit addresses left
+		// mbed uses the eight-bit device address, so shift seven-bit addresses
+		// left
 		// by one!
-		 ADO = 0;
-		 
-		 ascale = Ascale.AFS_2G;
-		 gscale = Gscale.GFS_250DPS;
-		 
-		 accelCount = new int[3];
-		 gyroCount = new int[3];
-		 
-		 SelfTest = new float[6];
-		 delt_t = 0; 
-		 count = 0;
-		 PI = 3.14159265358979323846f;
-		 GyroMeasError = PI * (60.0f / 180.0f);
-		 beta = (float) (Math.sqrt(3.0f / 4.0f) * GyroMeasError);
-		 GyroMeasDrift = PI * (1.0f / 180.0f);
-		 zeta = (float) (Math.sqrt(3.0f / 4.0f) * GyroMeasDrift);
-		 Kp = 2.0f * 5.0f;
-		 Ki = 0.0f;
-		 
-		 deltat = 0.0f;
-		 lastUpdate = 0;
-		 firstUpdate = 0;
-		 
-		 Now = 0;
+		ADO = 0;
+
+		ascale = Ascale.AFS_2G;
+		gscale = Gscale.GFS_250DPS;
+
+		getAreg();
+		getGreg();
+
+		accelCount = new int[3];
+		gyroCount = new int[3];
+
+		SelfTest = new float[6];
+		delt_t = 0;
+		count = 0;
+		PI = 3.14159265358979323846f;
+		GyroMeasError = PI * (60.0f / 180.0f);
+		beta = (float) (Math.sqrt(3.0f / 4.0f) * GyroMeasError);
+		GyroMeasDrift = PI * (1.0f / 180.0f);
+		zeta = (float) (Math.sqrt(3.0f / 4.0f) * GyroMeasDrift);
+		Kp = 2.0f * 5.0f;
+		Ki = 0.0f;
+
+		deltat = 0.0f;
+		lastUpdate = 0;
+		firstUpdate = 0;
+
+		Now = 0;
+
+		resetMPU9250();
+		calibrateMPU9250(gyroBias, accelBias);
+		Timer.delay(2);
+		initMPU9250();
+		Timer.delay(2);
+
+		getAres();
+		getGres();
+		t.start();
 	}
+
+	public void update() {
+		if ((readByte(MPU9250_ADDRESS, INT_STATUS)) != 0) {
+			readAccelData(accelCount);
+			ax = (float) accelCount[0] * aRes - accelBias[0];
+			ay = (float) accelCount[1] * aRes - accelBias[1];
+			az = (float) accelCount[2] * aRes - accelBias[2];
+
+			readGyroData(gyroCount);
+			// Read the x/y/z adc values
+			// Calculate the gyro value into actual degrees per second
+			gx = (float) gyroCount[0] * gRes - gyroBias[0]; // get actual gyro
+															// value, this
+															// depends on scale
+															// being set
+			gy = (float) gyroCount[1] * gRes - gyroBias[1];
+			gz = (float) gyroCount[2] * gRes - gyroBias[2];
+			
+			
+		}
+		Now = (int) (t.get() * 1000000);
+	    deltat = (float)((Now - lastUpdate)/1000000.0f) ; // set integration time by time elapsed since last filter update
+	    lastUpdate = Now;
+	    
+	    sum += deltat;
+	    sumCount++;
+	    
+	    MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, mx, my, mz);
+
+	}
+
 	public void writeByte(int address, int subAddress, int data) {
 		byte[] data_write = new byte[2];
 		data_write[0] = (byte) subAddress;
@@ -470,7 +522,7 @@ public class MPU9250Gyro {
 		// TODO help
 		i2c.write(address, data_write[0]); // no stop
 		i2c.read(address, 1, data);
-		
+
 		return data[0];
 	}
 
@@ -487,9 +539,9 @@ public class MPU9250Gyro {
 	}
 
 	public void getGreg() {
-		switch(gscale) {
-		//set gyro rate
-		
+		switch (gscale) {
+		// set gyro rate
+
 		case GFS_250DPS:
 			gReg = 0b00;
 			break;
@@ -504,11 +556,11 @@ public class MPU9250Gyro {
 			break;
 		}
 	}
-	
+
 	public void getAreg() {
-		switch(ascale) {
-		//set acc range/rate
-		
+		switch (ascale) {
+		// set acc range/rate
+
 		case AFS_2G:
 			aReg = 0b00;
 			break;
@@ -553,7 +605,7 @@ public class MPU9250Gyro {
 		// Here's a bit of an algorith to calculate DPS/(ADC tick) based on that
 		// 2-bit value:
 		case AFS_2G:
-			aRes =  (float) (2.0 / 32768.0);
+			aRes = (float) (2.0 / 32768.0);
 			break;
 		case AFS_4G:
 			aRes = (float) (4.0 / 32768.0);
@@ -610,8 +662,6 @@ public class MPU9250Gyro {
 		destination[2] = (int) (((int) rawData[4] << 8) | rawData[5]);
 	}
 
-	
-
 	int readTempData() {
 		int[] rawData = new int[2]; // x/y/z gyro register data stored here
 		readBytes(MPU9250_ADDRESS, TEMP_OUT_H, 2, rawData); // Read the two raw
@@ -632,8 +682,6 @@ public class MPU9250Gyro {
 		Timer.delay(0.1);
 	}
 
-	
-
 	public void initMPU9250() {
 		// Initialize MPU9250 device
 		// wake up device
@@ -642,7 +690,7 @@ public class MPU9250Gyro {
 														// sensors
 		Timer.delay(0.1);
 		// Delay 100 ms for PLL to get established on x-axis gyro;
-					// should check for PLL ready interrupt
+		// should check for PLL ready interrupt
 
 		// get stable time source
 		writeByte(MPU9250_ADDRESS, PWR_MGMT_1, 0x01); // Set clock source to be
@@ -771,7 +819,8 @@ public class MPU9250Gyro {
 													// accelerometer sensors for
 													// FIFO (max size 512 bytes
 													// in MPU-9250)
-		Timer.delay(0.04); // accumulate 40 samples in 80 milliseconds = 480 bytes
+		Timer.delay(0.04); // accumulate 40 samples in 80 milliseconds = 480
+							// bytes
 
 		// At end of sample accumulation, turn off FIFO sensor read
 		writeByte(MPU9250_ADDRESS, FIFO_EN, 0x00); // Disable gyro and
@@ -888,8 +937,9 @@ public class MPU9250Gyro {
 		// TODO Beware bitwise might be necessary
 		for (ii = 0; ii < 3; ii++) {
 			if ((accel_bias_reg[ii] == 1) && (mask == 1))
-				mask_bit[(int) ii] = 0x01; // If temperature compensation bit is set,
-										// record that fact in mask_bit
+				mask_bit[(int) ii] = 0x01; // If temperature compensation bit is
+											// set,
+											// record that fact in mask_bit
 		}
 
 		// Construct total accelerometer bias, including calculated average
@@ -1025,7 +1075,7 @@ public class MPU9250Gyro {
 														// all three axes and
 														// set gyro range to +/-
 														// 250 degrees/s
-		Timer.delay(0.025); //Delay a while to let the device stabilize
+		Timer.delay(0.025); // Delay a while to let the device stabilize
 
 		for (int ii = 0; ii < 200; ii++) { // get average self-test values of
 											// gyro and acclerometer
@@ -1078,7 +1128,8 @@ public class MPU9250Gyro {
 		// Configure the gyro and accelerometer for normal operation
 		writeByte(MPU9250_ADDRESS, ACCEL_CONFIG, 0x00);
 		writeByte(MPU9250_ADDRESS, GYRO_CONFIG, 0x00);
-		Timer.delay(0.025); //TODO Wrong Delay a while to let the device stabilize
+		Timer.delay(0.025); // TODO Wrong Delay a while to let the device
+							// stabilize
 
 		// Retrieve accelerometer and gyro factory Self-Test Code from USR_Reg
 		selfTest[0] = readByte(MPU9250_ADDRESS, SELF_TEST_X_ACCEL); // X-axis
@@ -1108,29 +1159,29 @@ public class MPU9250Gyro {
 
 		// Retrieve factory self-test value from self-test code reads
 		factoryTrim[0] = (float) ((float) (2620 / 1 << FS) * (Math.pow(1.01, ((float) selfTest[0] - 1.0)))); // FT[Xa]
-																									// factory
-																									// trim
-																									// calculation
+		// factory
+		// trim
+		// calculation
 		factoryTrim[1] = (float) ((float) (2620 / 1 << FS) * (Math.pow(1.01, ((float) selfTest[1] - 1.0)))); // FT[Ya]
-																									// factory
-																									// trim
-																									// calculation
+		// factory
+		// trim
+		// calculation
 		factoryTrim[2] = (float) ((float) (2620 / 1 << FS) * (Math.pow(1.01, ((float) selfTest[2] - 1.0)))); // FT[Za]
-																									// factory
-																									// trim
-																									// calculation
+		// factory
+		// trim
+		// calculation
 		factoryTrim[3] = (float) ((float) (2620 / 1 << FS) * (Math.pow(1.01, ((float) selfTest[3] - 1.0)))); // FT[Xg]
-																									// factory
-																									// trim
-																									// calculation
+		// factory
+		// trim
+		// calculation
 		factoryTrim[4] = (float) ((float) (2620 / 1 << FS) * (Math.pow(1.01, ((float) selfTest[4] - 1.0)))); // FT[Yg]
-																									// factory
-																									// trim
-																									// calculation
+		// factory
+		// trim
+		// calculation
 		factoryTrim[5] = (float) ((float) (2620 / 1 << FS) * (Math.pow(1.01, ((float) selfTest[5] - 1.0)))); // FT[Zg]
-																									// factory
-																									// trim
-																									// calculation
+		// factory
+		// trim
+		// calculation
 
 		// Report results as a ratio of (STR - FT)/FT; the change from Factory
 		// Trim of the Self-Test Response
@@ -1371,13 +1422,12 @@ public class MPU9250Gyro {
 	}
 
 	/*
-	 * private private double kSamplePeriod = 0.001; private private
-	 * double kCalibrationSampleTime = 5.0; private private double
+	 * private private double kSamplePeriod = 0.001; private private double
+	 * kCalibrationSampleTime = 5.0; private private double
 	 * kDegreePerSecondPerLSB = 0.0125;
 	 * 
-	 * private private byte REG_GYRO_CONFIG = 0x1B; private private
-	 * byte REG_GYRO_ZOUT_H = 0x47; private private byte REG_GYRO_ZOUT_L =
-	 * 0x48;
+	 * private private byte REG_GYRO_CONFIG = 0x1B; private private byte
+	 * REG_GYRO_ZOUT_H = 0x47; private private byte REG_GYRO_ZOUT_L = 0x48;
 	 * 
 	 * 
 	 * 
@@ -1419,8 +1469,24 @@ public class MPU9250Gyro {
 	 */
 
 	public void reset() {
-		// TODO Auto-generated method stub
+		yaw = 0;
+	}
 
+	@Override
+	public void calibrate() {
+		calibrateMPU9250(gyroBias, accelBias);
+	}
+
+	@Override
+	public double getAngle() {
+		yaw = Math.atan2(2.0 * (q[1] * q[2] + q[0] * q[3]), q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3]);
+		return yaw;
+	}
+
+	@Override
+	public double getRate() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
