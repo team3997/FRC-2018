@@ -109,6 +109,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		robot.updateGyro();
 		AutoRoutineRunner.getTimer().reset();
 		input.updateInput();
 		auto.stop();
@@ -129,6 +130,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		robot.updateGyro();
 		visionController.update();
 		lights.setAutoLights();
 		dashboardLogger.updateData();
@@ -147,6 +149,7 @@ public class Robot extends IterativeRobot {
 		driveController.reset();
 		visionController.enable();
 		climberController.reset();
+		robot.updateGyro();
 		currTimeSec = 0.0;
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
@@ -167,7 +170,7 @@ public class Robot extends IterativeRobot {
 		gearController.update();
 		lights.setEnabledLights();
 		climberController.update();
-
+		robot.updateGyro();
 	}
 
 	/**

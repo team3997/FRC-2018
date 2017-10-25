@@ -238,8 +238,8 @@ public class MPU9250Gyro extends GyroBase {
 	float temperature;
 	float[] SelfTest;
 
-	int delt_t; // used to control display output rate
-	int count; // used to control display output rate
+	double delt_t; // used to control display output rate
+	double count; // used to control display output rate
 
 	// parameters for 6 DoF sensor fusion calculations
 	float PI;
@@ -258,10 +258,10 @@ public class MPU9250Gyro extends GyroBase {
 	float deltat; // integration interval for both filter schemes
 	int lastUpdate, firstUpdate, Now; // used to calculate integration interval
 										// // used to calculate integration
-	Timer t;									// interval
+	Timer t; // interval
 	float[] eInt = { 0.0f, 0.0f, 0.0f };
 	float[] q = { 1.0f, 0.0f, 0.0f, 0.0f }; // vector to hold quaternion
-	
+
 	float sum;
 	long sumCount;
 	// vector to hold integral error for Mahony method
@@ -269,8 +269,10 @@ public class MPU9250Gyro extends GyroBase {
 	// ====== Set of useful function to access acceleration, gyroscope, and
 	// temperature data
 	// ===================================================================================================================
+	boolean AHRS;
 
 	public MPU9250Gyro() {
+		AHRS = true;
 		sum = 0;
 		sumCount = 0;
 		i2c = new I2C(Port.kOnboard, MPU9250_ADDRESS);
@@ -480,11 +482,14 @@ public class MPU9250Gyro extends GyroBase {
 	public void update() {
 		if ((readByte(MPU9250_ADDRESS, INT_STATUS)) != 0) {
 			readAccelData(accelCount);
+			getAres();
+
 			ax = (float) accelCount[0] * aRes - accelBias[0];
 			ay = (float) accelCount[1] * aRes - accelBias[1];
 			az = (float) accelCount[2] * aRes - accelBias[2];
 
 			readGyroData(gyroCount);
+			getGres();
 			// Read the x/y/z adc values
 			// Calculate the gyro value into actual degrees per second
 			gx = (float) gyroCount[0] * gRes - gyroBias[0]; // get actual gyro
@@ -493,18 +498,81 @@ public class MPU9250Gyro extends GyroBase {
 															// being set
 			gy = (float) gyroCount[1] * gRes - gyroBias[1];
 			gz = (float) gyroCount[2] * gRes - gyroBias[2];
-			
-			
+
 		}
 		Now = (int) (t.get() * 1000000);
-	    deltat = (float)((Now - lastUpdate)/1000000.0f) ; // set integration time by time elapsed since last filter update
-	    lastUpdate = Now;
-	    
-	    sum += deltat;
-	    sumCount++;
-	    
-	    MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, 0, 0, 0);
+		deltat = (float) ((Now - lastUpdate) / 1000000.0f); // set integration
+															// time by time
+															// elapsed since
+															// last filter
+															// update
+		lastUpdate = Now;
 
+		sum += deltat;
+		sumCount++;
+
+		MadgwickQuaternionUpdate(ax, ay, az, gx * PI / 180.0f, gy * PI / 180.0f, gz * PI / 180.0f, 0, 0, 0);
+
+		if (!AHRS) {
+			delt_t = Timer.getFPGATimestamp() - count;
+			if (delt_t > 0.5) {
+				tempCount = readTempData();
+				temperature = (float) (tempCount / 333.87 + 21.0);
+				count = Timer.getFPGATimestamp();
+
+			}
+		} else {
+			delt_t = Timer.getFPGATimestamp() - count;
+			if (delt_t > 0.5) {
+				// Define output variables from updated quaternion---these are
+				// Tait-Bryan angles, commonly used in aircraft orientation.
+				// In this coordinate system, the positive z-axis is down toward
+				// Earth.
+				// Yaw is the angle between Sensor x-axis and Earth magnetic
+				// North (or true North if corrected for local declination,
+				// looking down on the sensor positive yaw is counterclockwise.
+				// Pitch is angle between sensor x-axis and Earth ground plane,
+				// toward the Earth is positive, up toward the sky is negative.
+				// Roll is angle between sensor y-axis and Earth ground plane,
+				// y-axis up is positive roll.
+				// These arise from the definition of the homogeneous rotation
+				// matrix constructed from quaternions.
+				// Tait-Bryan angles as well as Euler angles are
+				// non-commutative; that is, the get the correct orientation the
+				// rotations must be
+				// applied in the correct order which for this configuration is
+				// yaw, pitch, and then roll.
+				// For more see
+				// http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+				// which has additional links.
+				yaw = Math.atan2(2.0f * (q[1] * q[2] + q[0] * q[3]), q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3]);
+				pitch = -Math.asin(2.0f * (q[1] * q[3] - q[0] * q[2]));
+				roll = Math.atan2(2.0f * (q[0] * q[1] + q[2] * q[3]), q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]);
+				pitch *= 180.0f / PI;
+				yaw *= 180.0f / PI;
+				yaw -= 13.8; // Declination at Danville, California is 13
+								// degrees 48 minutes and 47 seconds on
+								// 2014-04-04
+				roll *= 180.0f / PI;
+				
+				// With these settings the filter is updating at a ~145 Hz rate using the Madgwick scheme and 
+		        // >200 Hz using the Mahony scheme even though the display refreshes at only 2 Hz.
+		        // The filter update rate is determined mostly by the mathematical steps in the respective algorithms, 
+		        // the processor speed (8 MHz for the 3.3V Pro Mini), and the magnetometer ODR:
+		        // an ODR of 10 Hz for the magnetometer produce the above rates, maximum magnetometer ODR of 100 Hz produces
+		        // filter update rates of 36 - 145 and ~38 Hz for the Madgwick and Mahony schemes, respectively. 
+		        // This is presumably because the magnetometer read takes longer than the gyro or accelerometer reads.
+		        // This filter update rate should be fast enough to maintain accurate platform orientation for 
+		        // stabilization control of a fast-moving robot or quadcopter. Compare to the update rate of 200 Hz
+		        // produced by the on-board Digital Motion Processor of Invensense's MPU6050 6 DoF and MPU9150 9DoF sensors.
+		        // The 3.3 V 8 MHz Pro Mini is doing pretty well!
+		       
+
+		        count = Timer.getFPGATimestamp();
+		        sumCount = 0;
+		        sum = 0;
+			}
+		}
 	}
 
 	public void writeByte(int address, int subAddress, int data) {
@@ -902,8 +970,7 @@ public class MPU9250Gyro extends GyroBase {
 		 */
 		dest1[0] = (float) gyro_bias[0] / (float) gyrosensitivity; // construct
 																	// gyro bias
-																	// in deg/s
-																	// for later
+																	// in deg/s										// for later
 																	// manual
 																	// subtraction
 		dest1[1] = (float) gyro_bias[1] / (float) gyrosensitivity;
@@ -986,6 +1053,7 @@ public class MPU9250Gyro extends GyroBase {
 		dest2[2] = (float) accel_bias[2] / (float) accelsensitivity;
 	}
 
+	
 	// Accelerometer and gyroscope self test; check calibration wrt factory
 	// settings
 	public void MPU9250SelfTest(float[] destination) // Should return percent
@@ -1421,53 +1489,6 @@ public class MPU9250Gyro extends GyroBase {
 
 	}
 
-	/*
-	 * private private double kSamplePeriod = 0.001; private private double
-	 * kCalibrationSampleTime = 5.0; private private double
-	 * kDegreePerSecondPerLSB = 0.0125;
-	 * 
-	 * private private byte REG_GYRO_CONFIG = 0x1B; private private byte
-	 * REG_GYRO_ZOUT_H = 0x47; private private byte REG_GYRO_ZOUT_L = 0x48;
-	 * 
-	 * 
-	 * 
-	 * I2C comms; byte[] buffer; int config; int rate;
-	 * 
-	 * 
-	 * /**
-	 * 
-	 *
-	 * public MPU9250Gyro(I2C.Port port, Range range, int deviceAddress) {
-	 * 
-	 * 
-	 * comms = new I2C(port, deviceAddress); setRange(range);
-	 * 
-	 * comms.read(REG_GYRO_ZOUT_H, 2, buffer); rate = (buffer[0] * 256) +
-	 * buffer[1];
-	 * 
-	 * comms.write(REG_GYRO_CONFIG, 0b00010000); }
-	 * 
-	 * @Override public void setRange(Range range) { final byte value;
-	 * 
-	 * switch (range) { case k2G: value = 0; break; case k4G: value = 1; break;
-	 * case k8G: value = 2; break; case k16G: value = 3; break; default: throw
-	 * new IllegalArgumentException(range + " unsupported range type"); }
-	 * 
-	 * @Override public void calibrate() { // TODO Auto-generated method stub
-	 * 
-	 * }
-	 * 
-	 * 
-	 * @Override public double getAngle() {
-	 * 
-	 * return 0; }
-	 * 
-	 * 
-	 * @Override public double getRate() {
-	 * 
-	 * return data; }
-	 */
-
 	public void reset() {
 		yaw = 0;
 	}
@@ -1479,14 +1500,13 @@ public class MPU9250Gyro extends GyroBase {
 
 	@Override
 	public double getAngle() {
-		yaw = Math.atan2(2.0 * (q[1] * q[2] + q[0] * q[3]), q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3]);
 		return yaw;
 	}
 
 	@Override
 	public double getRate() {
 		// TODO Auto-generated method stub
-		return 0;
+		return gz;
 	}
 
 }

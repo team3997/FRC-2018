@@ -51,7 +51,7 @@ public class ArcadeStraightAction extends Action{
 
 	@Override
 	public void update() {
-		
+		robot.updateGyro();
 	}
 
 	@Override

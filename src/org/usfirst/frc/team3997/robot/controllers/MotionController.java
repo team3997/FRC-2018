@@ -81,6 +81,7 @@ public void setUp(Trajectory trajectoryInput) {
 	}
 	// TODO Put this in control loop
 	public void update() {
+		robot.updateGyro();
 		if(isEnabled) {
 			double l = left.calculate(robot.leftDriveEncoder.get());
 			double r = left.calculate(robot.rightDriveEncoder.get());

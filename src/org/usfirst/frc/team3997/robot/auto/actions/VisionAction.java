@@ -56,6 +56,8 @@ public class VisionAction extends Action{
 
 	@Override
 	public void update() {
+		robot.updateGyro();
+
 		/*
 		 * if(driveTrain.visionPID.getRightContour() == 0.0) {
 		 * 

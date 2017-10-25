@@ -62,13 +62,15 @@ public class RobotModel {
 		timer = new Timer();
 		timer.start();
 		
-		gyro = MPU9250Gyro();
+		gyro = new MPU9250Gyro();
 		// TODO add real url
 		//camera.addServer("Server");
 
 	}
 
-	
+	public void updateGyro() {
+		gyro.update();
+	}
 
 	public enum Wheels {
 		LeftWheels, RightWheels, AllWheels
@@ -113,6 +115,7 @@ public class RobotModel {
 	// resets variables and objects
 	public void reset() {
 		resetEncoders();
+		gyro.reset();
 	}
 
 	// initializes variables pertaining to current
