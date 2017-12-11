@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -32,21 +33,21 @@ public class Robot extends IterativeRobot {
 	double lastTimeSec = 0;
 	double deltaTimeSec = 0;
 	
-	RobotModel robot = new RobotModel();
-	RemoteControl humanControl = new ControlBoard();
-	DriveController driveController = new DriveController(robot, humanControl);
-	VisionController visionController = new VisionController();
-	LightController lights = new LightController();
-	DashboardLogger dashboardLogger = new DashboardLogger(robot, humanControl);
-	DashboardInput input = new DashboardInput();
+	RobotModel robot;
+	RemoteControl humanControl;
+	DriveController driveController;
+	VisionController visionController;
+	LightController lights;
+	DashboardLogger dashboardLogger;
+	DashboardInput input;
 
-	MotionController motion = new MotionController(robot);
-	GearController gearController = new GearController(robot, humanControl);
-	ClimberController climberController = new ClimberController(robot, humanControl);
+	MotionController motion;
+	GearController gearController;
+	ClimberController climberController;
 	
-	MasterController masterController = new MasterController(driveController, robot, gearController, motion, visionController, lights);
-	Auto auto = new Auto(masterController);
-	Timer timer = new Timer();
+	MasterController masterController;
+	Auto auto;
+	Timer timer;
 
 
 	/**
@@ -109,6 +110,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		robot.reset();
 		robot.updateGyro();
 		AutoRoutineRunner.getTimer().reset();
 		input.updateInput();
@@ -131,6 +133,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		robot.updateGyro();
+		SmartDashboard.putNumber("gyro", robot.getAngle());
 		visionController.update();
 		lights.setAutoLights();
 		dashboardLogger.updateData();
@@ -160,6 +163,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		SmartDashboard.putNumber("gyro", robot.getAngle());
+
 		dashboardLogger.updateData();
 		lastTimeSec = currTimeSec;
 		currTimeSec = robot.getTime();
@@ -178,6 +183,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		SmartDashboard.putNumber("gyro", robot.getAngle());
+
 		LiveWindow.run();
 		// Drive Train
 		LiveWindow.addActuator("Drive Train", "Front Left Motor", robot.leftDriveMotorA);
@@ -200,11 +207,14 @@ public class Robot extends IterativeRobot {
 		} else if (humanControl.getTankDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = false;
 		}
+		robot.reset();
 		input.updateInput();
 
 	}
 
 	public void disabledPeriodic() {
+		robot.reset();
+
 		input.updateInput();
 		dashboardLogger.updateData();
 

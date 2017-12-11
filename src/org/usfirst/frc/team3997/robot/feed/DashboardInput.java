@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.tables.ITable;
 import edu.wpi.first.wpilibj.tables.ITableListener;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.Waypoint;
 
 public class DashboardInput {
 	private NetworkTable prefs;
@@ -29,9 +31,16 @@ public class DashboardInput {
 	    HAL.report(tResourceType.kResourceType_Preferences, 0);
 		double defaultAutoDistances[][] = {{5.0, 8.0},{30.0, 4.0},{4.0, 5.0}};
 		double customAutoDistances[][] = {prefs.getNumberArray("First Auto Distance", defaultAutoDistances[0]), prefs.getNumberArray("First Auto Distance", defaultAutoDistances[1]), prefs.getNumberArray("First Auto Distance", defaultAutoDistances[2])};
+		double redLeftGear[][] = {prefs.getNumberArray("Red Left Waypoint 1", DashboardVariables.redLeftGearWaypoints[0]),prefs.getNumberArray("Red Left Waypoint 2", DashboardVariables.redLeftGearWaypoints[1]), prefs.getNumberArray("Red Left Waypoint 3", DashboardVariables.redLeftGearWaypoints[2])};
 		DashboardVariables.firstAutoDistance = customAutoDistances[0][0];
 		DashboardVariables.firstAutoDistanceTimeout = customAutoDistances[0][1];
-
+		
+		DashboardVariables.redLeftGear = new Waypoint[] {
+			    new Waypoint(redLeftGear[0][0], redLeftGear[0][1], Pathfinder.d2r(redLeftGear[0][2])),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
+			    new Waypoint(redLeftGear[0][0], redLeftGear[0][1], Pathfinder.d2r(redLeftGear[0][2])),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
+			    new Waypoint(redLeftGear[0][0], redLeftGear[0][1], Pathfinder.d2r(redLeftGear[0][2]))                           // Waypoint @ x=0, y=0,   exit angle=0 radians
+			};
+		
 		DashboardVariables.nextAutoAngle = customAutoDistances[1][0];
 		DashboardVariables.nextAutoAngleTimeout = customAutoDistances[1][1];
 		
@@ -88,6 +97,16 @@ public class DashboardInput {
 
 		DashboardVariables.gearRamp = prefs.getBoolean("GoToGearRamp", false);
 		DashboardVariables.gearDown = prefs.getBoolean("GoToGearDown", false);
+		
+		double redLeftGear[][] = {prefs.getNumberArray("Waypoint 1", DashboardVariables.redLeftGearWaypoints[0]),prefs.getNumberArray("Waypoint 2", DashboardVariables.redLeftGearWaypoints[1]), prefs.getNumberArray("Waypoint 3", DashboardVariables.redLeftGearWaypoints[2])};
+		DashboardVariables.firstAutoDistance = customAutoDistances[0][0];
+		DashboardVariables.firstAutoDistanceTimeout = customAutoDistances[0][1];
+		
+		DashboardVariables.redLeftGear = new Waypoint[] {
+			    new Waypoint(redLeftGear[0][0], redLeftGear[0][1], Pathfinder.d2r(redLeftGear[0][2])),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
+			    new Waypoint(redLeftGear[0][0], redLeftGear[0][1], Pathfinder.d2r(redLeftGear[0][2])),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
+			    new Waypoint(redLeftGear[0][0], redLeftGear[0][1], Pathfinder.d2r(redLeftGear[0][2]))                           // Waypoint @ x=0, y=0,   exit angle=0 radians
+			};
 
 		
 	}

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.*;
 import java.lang.Math;
 
@@ -476,6 +477,7 @@ public class MPU9250Gyro extends GyroBase {
 
 		getAres();
 		getGres();
+		t = new Timer();
 		t.start();
 	}
 
@@ -512,6 +514,7 @@ public class MPU9250Gyro extends GyroBase {
 		sumCount++;
 
 		MadgwickQuaternionUpdate(ax, ay, az, gx * PI / 180.0f, gy * PI / 180.0f, gz * PI / 180.0f, 0, 0, 0);
+		yaw = gz;
 
 		if (!AHRS) {
 			delt_t = Timer.getFPGATimestamp() - count;
@@ -566,11 +569,12 @@ public class MPU9250Gyro extends GyroBase {
 		        // stabilization control of a fast-moving robot or quadcopter. Compare to the update rate of 200 Hz
 		        // produced by the on-board Digital Motion Processor of Invensense's MPU6050 6 DoF and MPU9150 9DoF sensors.
 		        // The 3.3 V 8 MHz Pro Mini is doing pretty well!
-		       
-
+				yaw = gz;
+				
 		        count = Timer.getFPGATimestamp();
 		        sumCount = 0;
 		        sum = 0;
+		        SmartDashboard.putNumber("yaw", yaw);
 			}
 		}
 	}
@@ -586,23 +590,34 @@ public class MPU9250Gyro extends GyroBase {
 	public byte readByte(int address, int subAddress) {
 		byte[] data = new byte[1]; // `data` will store the register data
 		byte[] data_write = new byte[1];
+		try {
 		data_write[0] = (byte) subAddress;
 		// TODO help
 		i2c.write(address, data_write[0]); // no stop
 		i2c.read(address, 1, data);
 
 		return data[0];
+		} catch (Exception e) {
+			System.out.println("exception " + e);
+			return -1;
+		}
 	}
 
 	public void readBytes(int address, int subAddress, int count, int[] dest) {
+		
+		
 		byte[] data = new byte[14]; // `data` will store the register data
 		byte[] data_write = new byte[1];
-		data_write[0] = (byte) subAddress;
-		// TODO help
-		i2c.write(address, data_write[0]); // no stop
-		i2c.read(address, count, data);
-		for (int ii = 0; ii < count; ii++) {
-			dest[ii] = data[ii];
+		try {
+			data_write[0] = (byte) subAddress;
+			// TODO help
+			i2c.write(address, data_write[0]); // no stop
+			i2c.read(address, count, data);
+			for (int ii = 0; ii < count; ii++) {
+				dest[ii] = data[ii];
+			}
+		} catch (Exception e){
+			System.out.println("exception " + e);
 		}
 	}
 
@@ -930,6 +945,7 @@ public class MPU9250Gyro extends GyroBase {
 			gyro_bias[2] += (int) gyro_temp[2];
 
 		}
+		if(packet_count != 0) {
 		accel_bias[0] /= (int) packet_count; // Normalize sums to get average
 												// count biases
 		accel_bias[1] /= (int) packet_count;
@@ -937,7 +953,7 @@ public class MPU9250Gyro extends GyroBase {
 		gyro_bias[0] /= (int) packet_count;
 		gyro_bias[1] /= (int) packet_count;
 		gyro_bias[2] /= (int) packet_count;
-
+		}
 		if (accel_bias[2] > 0L) {
 			accel_bias[2] -= (int) accelsensitivity;
 		} // Remove gravity from the z-axis accelerometer bias calculation
