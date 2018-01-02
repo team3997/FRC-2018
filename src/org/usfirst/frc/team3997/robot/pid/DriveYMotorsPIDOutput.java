@@ -1,12 +1,12 @@
 package org.usfirst.frc.team3997.robot.pid;
 
 import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class DriveYMotorsPIDOutput implements PIDOutput {
 
-	private RobotDrive drive;
-	public DriveYMotorsPIDOutput(RobotDrive drive) {
+	private DifferentialDrive drive;
+	public DriveYMotorsPIDOutput(DifferentialDrive drive) {
 		this.drive = drive;
 	}
 	@Override

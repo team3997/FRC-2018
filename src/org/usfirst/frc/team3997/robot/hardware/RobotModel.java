@@ -157,7 +157,7 @@ public class RobotModel {
 	}
 
 	public double getTimestamp() {
-		return timer.getFPGATimestamp();
+		return 	timer.getFPGATimestamp();
 	}
 
 	// returns the time

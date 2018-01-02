@@ -167,14 +167,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		LiveWindow.run();
-		// Drive Train
-		LiveWindow.addActuator("Drive Train", "Front Left Motor", robot.leftDriveMotorA);
-		LiveWindow.addActuator("Drive Train", "Back Left Motor", robot.leftDriveMotorB);
-		LiveWindow.addActuator("Drive Train", "Front Right Motor", robot.rightDriveMotorA);
-		LiveWindow.addActuator("Drive Train", "Back Right Motor", robot.rightDriveMotorB);
-		LiveWindow.addSensor("Drive Train", "Left Encoder", robot.leftDriveEncoder);
-		LiveWindow.addSensor("Drive Train", "Right Encoder", robot.rightDriveEncoder);
+		
 
 		input.updateInput();
 

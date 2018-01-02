@@ -1,15 +1,7 @@
 package org.usfirst.frc.team3997.robot.feed;
 
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.hal.HAL;
-import edu.wpi.first.wpilibj.hal.FRCNetComm.tResourceType;
-import sun.rmi.runtime.NewThreadAction;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTableValue;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTable;
 
-import edu.wpi.first.networktables.TableEntryListener;
 /*
  * 
  * dolub NOTIFY_IMMEDIATE = 0x01;
