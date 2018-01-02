@@ -38,22 +38,12 @@ public class DashboardInput {
 		DashboardVariables.lastAutoDistance = customAutoDistances[2][0];
 		DashboardVariables.lastAutoDistanceTimeout = customAutoDistances[2][1];
 		
-		double defaultPID[][] = {{0.4, 0.0, 0.1}, {12.5, 0, 9.5}, {12.5, 0, 2.5}};
-		double newPID[][] = {prefs.getNumberArray("DRIVE_PID", defaultPID[0]), prefs.getNumberArray("GEAR_PID", defaultPID[1]), prefs.getNumberArray("GEAR_RAMP_PID", defaultPID[2])};
-		DashboardVariables.DRIVE_P = newPID[0][0];
-		DashboardVariables.DRIVE_I = newPID[0][1];
-		DashboardVariables.DRIVE_D = newPID[0][2];
-		
-		DashboardVariables.GEAR_P = newPID[1][0];
-		DashboardVariables.GEAR_I = newPID[1][1];
-		DashboardVariables.GEAR_D = newPID[1][2];
-		
-		DashboardVariables.GEAR_RAMP_P = newPID[2][0];
-		DashboardVariables.GEAR_RAMP_I = newPID[2][1];
-		DashboardVariables.GEAR_RAMP_D = newPID[2][2];
+		double defaultPID[] = {0.4, 0.0, 0.1};
+		double newPID[] = prefs.getNumberArray("DRIVE_PID", defaultPID);
+		DashboardVariables.DRIVE_P = newPID[0];
+		DashboardVariables.DRIVE_I = newPID[0];
+		DashboardVariables.DRIVE_D = newPID[0];
 
-		DashboardVariables.gearRamp = prefs.getBoolean("GoToGearRamp", false);
-		DashboardVariables.gearDown = prefs.getBoolean("GoToGearDown", false);
 		
 		DashboardVariables.max_speed = prefs.getNumber("MAX_SPEED", 1);
 
@@ -72,22 +62,13 @@ public class DashboardInput {
 		DashboardVariables.lastAutoDistance = customAutoDistances[2][0];
 		DashboardVariables.lastAutoDistanceTimeout = customAutoDistances[2][1];
 		
-		double defaultPID[][] = {{0.4, 0.0, 0.1}, {12.5, 0, 9.5}, {12.5, 0, 2.5}};
-		double newPID[][] = {prefs.getNumberArray("DRIVE_PID", defaultPID[0]), prefs.getNumberArray("GEAR_PID", defaultPID[1]), prefs.getNumberArray("GEAR_RAMP_PID", defaultPID[2])};
-		DashboardVariables.DRIVE_P = newPID[0][0];
-		DashboardVariables.DRIVE_I = newPID[0][1];
-		DashboardVariables.DRIVE_D = newPID[0][2];
-		
-		DashboardVariables.GEAR_P = newPID[1][0];
-		DashboardVariables.GEAR_I = newPID[1][1];
-		DashboardVariables.GEAR_D = newPID[1][2];
-		
-		DashboardVariables.GEAR_RAMP_P = newPID[2][0];
-		DashboardVariables.GEAR_RAMP_I = newPID[2][1];
-		DashboardVariables.GEAR_RAMP_D = newPID[2][2];
+		double defaultPID[] = {0.4, 0.0, 0.1};
+		double newPID[] = prefs.getNumberArray("DRIVE_PID", defaultPID);
+		DashboardVariables.DRIVE_P = newPID[0];
+		DashboardVariables.DRIVE_I = newPID[0];
+		DashboardVariables.DRIVE_D = newPID[0];
 
-		DashboardVariables.gearRamp = prefs.getBoolean("GoToGearRamp", false);
-		DashboardVariables.gearDown = prefs.getBoolean("GoToGearDown", false);
+
 		DashboardVariables.max_speed = prefs.getNumber("MAX_SPEED", 1.0);
 		
 	}

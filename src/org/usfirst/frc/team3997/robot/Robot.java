@@ -4,9 +4,7 @@ import org.usfirst.frc.team3997.robot.auto.Auto;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutineRunner;
 import org.usfirst.frc.team3997.robot.auto.actions.Action;
 import org.usfirst.frc.team3997.robot.auto.actions.DriveIntervalAction;
-import org.usfirst.frc.team3997.robot.controllers.ClimberController;
 import org.usfirst.frc.team3997.robot.controllers.DriveController;
-import org.usfirst.frc.team3997.robot.controllers.GearController;
 import org.usfirst.frc.team3997.robot.controllers.LightController;
 import org.usfirst.frc.team3997.robot.controllers.MotionController;
 import org.usfirst.frc.team3997.robot.controllers.VisionController;
@@ -32,21 +30,20 @@ public class Robot extends IterativeRobot {
 	double lastTimeSec = 0;
 	double deltaTimeSec = 0;
 	
-	RobotModel robot = new RobotModel();
-	RemoteControl humanControl = new ControlBoard();
-	DriveController driveController = new DriveController(robot, humanControl);
-	VisionController visionController = new VisionController();
-	LightController lights = new LightController();
-	DashboardLogger dashboardLogger = new DashboardLogger(robot, humanControl);
-	DashboardInput input = new DashboardInput();
+	RobotModel robot;
+	RemoteControl humanControl;
+	DriveController driveController;
+	VisionController visionController;
+	LightController lights;
+	DashboardLogger dashboardLogger;
+	DashboardInput input;
 
-	MotionController motion = new MotionController(robot);
-	GearController gearController = new GearController(robot, humanControl);
-	ClimberController climberController = new ClimberController(robot, humanControl);
+	MotionController motion;
 	
-	MasterController masterController = new MasterController(driveController, robot, gearController, motion, visionController, lights);
-	Auto auto = new Auto(masterController);
-	Timer timer = new Timer();
+	
+	MasterController masterController;
+	Auto auto;
+	Timer timer;
 
 
 	/**
@@ -63,9 +60,8 @@ public class Robot extends IterativeRobot {
 		dashboardLogger = new DashboardLogger(robot, humanControl);
 		input = new DashboardInput();
 		motion = new MotionController(robot);
-		gearController = new GearController(robot, humanControl);
-		climberController = new ClimberController(robot, humanControl);
-		masterController = new MasterController(driveController, robot, gearController, motion, visionController,
+		
+		masterController = new MasterController(driveController, robot, motion, visionController,
 				lights);
 		auto = new Auto(masterController);
 		timer = new Timer();
@@ -143,10 +139,8 @@ public class Robot extends IterativeRobot {
 		auto.stop();
 		robot.resetTimer();
 		robot.resetEncoders();
-		gearController.reset();
 		driveController.reset();
 		visionController.enable();
-		climberController.reset();
 		currTimeSec = 0.0;
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
@@ -164,9 +158,7 @@ public class Robot extends IterativeRobot {
 		humanControl.readControls();
 		driveController.update(currTimeSec, deltaTimeSec);
 		visionController.disable();
-		gearController.update();
 		lights.setEnabledLights();
-		climberController.update();
 
 	}
 
