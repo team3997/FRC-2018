@@ -3,73 +3,59 @@ package org.usfirst.frc.team3997.robot.feed;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.hal.HAL;
 import edu.wpi.first.wpilibj.hal.FRCNetComm.tResourceType;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.networktables.NetworkTablesJNI;
-import edu.wpi.first.wpilibj.tables.ITable;
-import edu.wpi.first.wpilibj.tables.ITableListener;
+import sun.rmi.runtime.NewThreadAction;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableValue;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTable;
 
+import edu.wpi.first.networktables.TableEntryListener;
+/*
+ * 
+ * dolub NOTIFY_IMMEDIATE = 0x01;
+int NOTIFY_LOCAL = 0x02;
+int NOTIFY_NEW = 0x04;
+int NOTIFY_DELETE = 0x08;
+int NOTIFY_UPDATE = 0x10;
+*/
 public class DashboardInput {
-	private NetworkTable prefs;
-	ITableListener m_listener;
+	
 	Preferences preferences;
 	public DashboardInput() {
-		m_listener = new ITableListener() {
-		    @Override
-		    public void valueChanged(ITable table, String key, Object value, boolean isNew) {
-		      // unused
-		    }
-
-		    @Override
-		    public void valueChangedEx(ITable table, String key, Object value, int flags) {
-		      table.setPersistent(key);
-		    }
-		  };
-		prefs = NetworkTable.getTable("Preferences");
-		prefs.addTableListenerEx(m_listener, ITable.NOTIFY_NEW | ITable.NOTIFY_IMMEDIATE);
-	    HAL.report(tResourceType.kResourceType_Preferences, 0);
-		double defaultAutoDistances[][] = {{5.0, 8.0},{30.0, 4.0},{4.0, 5.0}};
-		double customAutoDistances[][] = {prefs.getNumberArray("First Auto Distance", defaultAutoDistances[0]), prefs.getNumberArray("First Auto Distance", defaultAutoDistances[1]), prefs.getNumberArray("First Auto Distance", defaultAutoDistances[2])};
-		DashboardVariables.firstAutoDistance = customAutoDistances[0][0];
-		DashboardVariables.firstAutoDistanceTimeout = customAutoDistances[0][1];
-
-		DashboardVariables.nextAutoAngle = customAutoDistances[1][0];
-		DashboardVariables.nextAutoAngleTimeout = customAutoDistances[1][1];
-		
-		DashboardVariables.lastAutoDistance = customAutoDistances[2][0];
-		DashboardVariables.lastAutoDistanceTimeout = customAutoDistances[2][1];
-		
-		double defaultPID[] = {0.4, 0.0, 0.1};
-		double newPID[] = prefs.getNumberArray("DRIVE_PID", defaultPID);
-		DashboardVariables.DRIVE_P = newPID[0];
-		DashboardVariables.DRIVE_I = newPID[0];
-		DashboardVariables.DRIVE_D = newPID[0];
 
 		
-		DashboardVariables.max_speed = prefs.getNumber("MAX_SPEED", 1);
+		DashboardVariables.firstAutoDistance = preferences.getDouble("First Auto Distance", 0);
+
+		DashboardVariables.nextAutoAngle = preferences.getDouble("Next Auto Angle", 0);
+		
+		DashboardVariables.lastAutoDistance = preferences.getDouble("Second Auto Distance", 0);
+		
+		
+		DashboardVariables.DRIVE_P = preferences.getDouble("Drive P Value", 0);
+		DashboardVariables.DRIVE_I = preferences.getDouble("Drive I Value", 0);
+		DashboardVariables.DRIVE_D = preferences.getDouble("Drive D Value", 0);
+
+		
+		DashboardVariables.max_speed = preferences.getDouble("Max Speed", 1);
 
 	}
 	
 	public void updateInput() {
 		
-		double defaultAutoDistances[][] = {{5.0, 8.0},{30.0, 4.0},{4.0, 5.0}};
-		double customAutoDistances[][] = {prefs.getNumberArray("First Auto Distance", defaultAutoDistances[0]), prefs.getNumberArray("First Auto Distance", defaultAutoDistances[1]), prefs.getNumberArray("First Auto Distance", defaultAutoDistances[2])};
-		DashboardVariables.firstAutoDistance = customAutoDistances[0][0];
-		DashboardVariables.firstAutoDistanceTimeout = customAutoDistances[0][1];
 
-		DashboardVariables.nextAutoAngle = customAutoDistances[1][0];
-		DashboardVariables.nextAutoAngleTimeout = customAutoDistances[1][1];
+		DashboardVariables.firstAutoDistance = preferences.getDouble("First Auto Distance", 0);
+
+		DashboardVariables.nextAutoAngle = preferences.getDouble("Next Auto Angle", 0);
 		
-		DashboardVariables.lastAutoDistance = customAutoDistances[2][0];
-		DashboardVariables.lastAutoDistanceTimeout = customAutoDistances[2][1];
+		DashboardVariables.lastAutoDistance = preferences.getDouble("Second Auto Distance", 0);
 		
-		double defaultPID[] = {0.4, 0.0, 0.1};
-		double newPID[] = prefs.getNumberArray("DRIVE_PID", defaultPID);
-		DashboardVariables.DRIVE_P = newPID[0];
-		DashboardVariables.DRIVE_I = newPID[0];
-		DashboardVariables.DRIVE_D = newPID[0];
+		
+		DashboardVariables.DRIVE_P = preferences.getDouble("Drive P Value", 0);
+		DashboardVariables.DRIVE_I = preferences.getDouble("Drive I Value", 0);
+		DashboardVariables.DRIVE_D = preferences.getDouble("Drive D Value", 0);
 
-
-		DashboardVariables.max_speed = prefs.getNumber("MAX_SPEED", 1.0);
+		
+		DashboardVariables.max_speed = preferences.getDouble("Max Speed", 1);
 		
 	}
 	

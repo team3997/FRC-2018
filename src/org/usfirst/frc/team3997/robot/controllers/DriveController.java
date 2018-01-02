@@ -14,12 +14,13 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class DriveController {
 
 	private RobotModel robot;
 
-	private RobotDrive drive;
+	private DifferentialDrive drive;
 	private RemoteControl humanControl;
 	private DriveState m_stateVal;
 	private DriveState nextState;
@@ -47,8 +48,7 @@ public class DriveController {
 		this.robot = robot;
 		this.humanControl = humanControl;
 
-		drive = new RobotDrive(this.robot.leftDriveMotorA, this.robot.leftDriveMotorB, this.robot.rightDriveMotorA,
-				this.robot.rightDriveMotorB);
+		drive = new DifferentialDrive(this.robot.leftDriveMotors, this.robot.rightDriveMotors);
 		drive.setSafetyEnabled(false);
 
 		this.robot.leftDriveEncoder.setPIDSourceType(PIDSourceType.kDisplacement);

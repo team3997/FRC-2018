@@ -8,6 +8,7 @@ import org.usfirst.frc.team3997.robot.hardware.Ports;
 public class RobotModel {
 
 	public Spark leftDriveMotorA, leftDriveMotorB, rightDriveMotorA, rightDriveMotorB;
+	public SpeedControllerGroup leftDriveMotors, rightDriveMotors;
 	public Encoder leftDriveEncoder, rightDriveEncoder;
 	//public CameraServer camera;
 	public Timer timer;
@@ -23,6 +24,9 @@ public class RobotModel {
 		rightDriveMotorA = new Spark(Ports.RIGHT_DRIVE_MOTOR_A_PWM_PORT);
 		rightDriveMotorB = new Spark(Ports.RIGHT_DRIVE_MOTOR_B_PWM_PORT);
 		
+		leftDriveMotors = new SpeedControllerGroup(leftDriveMotorA, leftDriveMotorB);
+		rightDriveMotors = new SpeedControllerGroup(rightDriveMotorA, rightDriveMotorB);
+
 		// TODO add real input channel
 		// gyro = new AnalogGyro(channel);
 
