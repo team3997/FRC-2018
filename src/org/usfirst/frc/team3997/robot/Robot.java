@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,8 +40,7 @@ public class Robot extends IterativeRobot {
 	DashboardInput input;
 
 	MotionController motion;
-	
-	
+
 	MasterController masterController;
 	Auto auto;
 	Timer timer;
@@ -105,6 +105,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		robot.reset();
+		robot.updateGyro();
 		AutoRoutineRunner.getTimer().reset();
 		input.updateInput();
 		auto.stop();
@@ -125,6 +127,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		robot.updateGyro();
+		SmartDashboard.putNumber("gyro", robot.getAngle());
 		visionController.update();
 		lights.setAutoLights();
 		dashboardLogger.updateData();
@@ -151,6 +155,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		SmartDashboard.putNumber("gyro", robot.getAngle());
+
 		dashboardLogger.updateData();
 		lastTimeSec = currTimeSec;
 		currTimeSec = robot.getTime();
@@ -167,8 +173,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		
-
 		input.updateInput();
 
 	}
@@ -182,11 +186,14 @@ public class Robot extends IterativeRobot {
 		} else if (humanControl.getTankDriveDesired()) {
 			Params.USE_ARCADE_DRIVE = false;
 		}
+		robot.reset();
 		input.updateInput();
 
 	}
 
 	public void disabledPeriodic() {
+		robot.reset();
+
 		input.updateInput();
 		dashboardLogger.updateData();
 

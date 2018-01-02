@@ -6,18 +6,19 @@ import org.usfirst.frc.team3997.robot.hardware.RobotModel;
 
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Timer;
+import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 
 public class PathFollowerAction extends Action{
 	private MotionController motion;
 	private RobotModel robot;
 	private double timeout;
-	public PathFollowerAction(MasterController controllers, Waypoint points[], double timeout) {
+	public PathFollowerAction(MasterController controllers, Trajectory trajectory, double timeout) {
 		this.motion = controllers.getMotionController();
 		this.robot = controllers.getRobotModel();
 		this.timeout = timeout;
 		
-		this.motion.setUp(points);
+		this.motion.setUp(trajectory);
 	}
 	@Override
 	public boolean isFinished() {
@@ -25,7 +26,8 @@ public class PathFollowerAction extends Action{
 	}
 
 	@Override
-	public void update() {		
+	public void update() {
+		robot.updateGyro();
 		motion.update();
 	}
 

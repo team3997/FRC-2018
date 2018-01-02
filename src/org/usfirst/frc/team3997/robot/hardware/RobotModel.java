@@ -10,6 +10,8 @@ public class RobotModel {
 	public Spark leftDriveMotorA, leftDriveMotorB, rightDriveMotorA, rightDriveMotorB;
 	public SpeedControllerGroup leftDriveMotors, rightDriveMotors;
 	public Encoder leftDriveEncoder, rightDriveEncoder;
+	public MPU9250Gyro gyro;
+
 	//public CameraServer camera;
 	public Timer timer;
 
@@ -57,9 +59,15 @@ public class RobotModel {
 
 		timer = new Timer();
 		timer.start();
+		
+		gyro = new MPU9250Gyro();
 		// TODO add real url
 		//camera.addServer("Server");
 
+	}
+
+	public void updateGyro() {
+		gyro.update();
 	}
 
 	public enum Wheels {
@@ -105,6 +113,7 @@ public class RobotModel {
 	// resets variables and objects
 	public void reset() {
 		resetEncoders();
+		gyro.reset();
 	}
 
 	// initializes variables pertaining to current
@@ -176,10 +185,11 @@ public class RobotModel {
 	}
 
 	public void resetGyro() {
+		gyro.reset();
 	}
 
 	public double getAngle() {
-		return 0;
+		return gyro.getAngle();
 	}
 
 	public void setLeftMotors(double output) {

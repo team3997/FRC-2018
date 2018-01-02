@@ -1,5 +1,7 @@
 package org.usfirst.frc.team3997.robot.hardware;
 
+import edu.wpi.first.wpilibj.I2C.Port;
+
 public class Ports {
 	public static final int GEAR_POT_OFFSET                        = 0;
 	// ***************** PWM PORTS *****************
@@ -43,5 +45,6 @@ public class Ports {
 
 	public static final int DRIVE_DIRECTION_BUTTON_PORT           = 9;
 	public static final int SHOOTER_RUN_BUTTON_PORT               = 1;
+	public static final int GYRO_PORT = 0;
 
 }
