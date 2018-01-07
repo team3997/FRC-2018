@@ -8,8 +8,10 @@ import org.usfirst.frc.team3997.robot.hardware.Ports;
 public class RobotModel {
 
 	public Spark leftDriveMotorA, leftDriveMotorB, rightDriveMotorA, rightDriveMotorB;
+	public Victor leftArmMotor, rightArmMotor;
 	public SpeedControllerGroup leftDriveMotors, rightDriveMotors;
 	public Encoder leftDriveEncoder, rightDriveEncoder;
+	public AnalogInput armEncoder;
 	public MPU9250Gyro gyro;
 
 	//public CameraServer camera;
@@ -29,9 +31,13 @@ public class RobotModel {
 		leftDriveMotors = new SpeedControllerGroup(leftDriveMotorA, leftDriveMotorB);
 		rightDriveMotors = new SpeedControllerGroup(rightDriveMotorA, rightDriveMotorB);
 
+		leftArmMotor = new Victor(Ports.LEFT_ARM_MOTOR_PWM_PORT);
+		rightArmMotor = new Victor(Ports.RIGHT_ARM_MOTOR_PWM_PORT);
 		// TODO add real input channel
 		// gyro = new AnalogGyro(channel);
-
+		
+		armEncoder = new AnalogInput(Ports.ARM_ENCODER);
+		
 		leftDriveEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER_PORTS[0], Ports.LEFT_DRIVE_ENCODER_PORTS[1]);
 		rightDriveEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCODER_PORTS[0], Ports.RIGHT_DRIVE_ENCODER_PORTS[1]);
 
@@ -178,6 +184,7 @@ public class RobotModel {
 	public void resetEncoders() {
 		leftDriveEncoder.reset();
 		rightDriveEncoder.reset();
+		
 	}
 
 	public double getEncoderError() {
@@ -202,5 +209,14 @@ public class RobotModel {
 		rightDriveMotorA.set(output);
 		rightDriveMotorB.set(output);
 	}
+	
+	public void moveArm(double speed) {
+		leftArmMotor.set(-speed);
+		rightArmMotor.set(speed);
+	}
+	public double getAverageArmSpeed(double speed) {
+		return (leftArmMotor.getSpeed() + rightArmMotor.getSpeed()) /2;
+	}
+	
 	
 }

@@ -19,11 +19,11 @@ public class Params {
 
 	public static final double CLIMBER_HARDSET_MOTOR_SPEED = 1.0;
 
-	// GEAR HOLDER PARAMS
-	public static final double GEAR_WHEELS_RESTING_MOTOR_SPEED = 0.0;
-	public static final double GEAR_WHEELS_ACTIVE_MOTOR_SPEED = 0.75;
-	public static final double GEAR_WHEELS_OUT_MOTOR_SPEED = 0.35; // 0.575
-	public static final double GEAR_TILTER_MAX_MOTOR_SPEED = 0.4;
+	// ARM PARAMS
+	public static final double ARM_FEED_SETPOINT = 0.0;
+	public static final double ARM_SWITCH_SETPOINT = 0.75;
+	public static final double ARM_SCALE_SETPOINT = 0.35; // 0.575
+	public static final double ARM_CLIMB_SETPOINT = 0.4;
 
 	public static final double GEAR_POT_MAX_DOWN_UP[] = { 0.56, 0.45 };
 	public static final double GEAR_POT_UP_POSITION = 0.425;
@@ -73,7 +73,7 @@ public class Params {
 	public static final double new_drive_i = DashboardVariables.DRIVE_I;
 	public static final double new_drive_d = DashboardVariables.DRIVE_D;
 
-	// [GEAR_PID]
+	// [ARM_PID]
 	public static final double gear_p = DashboardVariables.GEAR_P;
 	public static final double gear_i = DashboardVariables.GEAR_I;
 	public static final double gear_d = DashboardVariables.GEAR_D;
