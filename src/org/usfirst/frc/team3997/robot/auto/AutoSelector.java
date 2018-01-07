@@ -3,10 +3,13 @@ package org.usfirst.frc.team3997.robot.auto;
 import java.util.ArrayList;
 
 import org.usfirst.frc.team3997.robot.MasterController;
+import org.usfirst.frc.team3997.robot.auto.routines.CenterAutoRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.CustomDistanceRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.DoNothingRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.DriveThreeSecRoutine;
+import org.usfirst.frc.team3997.robot.auto.routines.LeftAutoRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.PassAutoLineRoutine;
+import org.usfirst.frc.team3997.robot.auto.routines.RightAutoRoutine;
 import org.usfirst.frc.team3997.robot.auto.routines.TurnRoutine;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,6 +31,9 @@ public class AutoSelector {
 		registerAutonomous(new PassAutoLineRoutine(controllers));
 		registerAutonomous(new TurnRoutine(controllers));
 		registerAutonomous(new CustomDistanceRoutine(controllers));
+		registerAutonomous(new LeftAutoRoutine(controllers));
+		registerAutonomous(new CenterAutoRoutine(controllers));
+		registerAutonomous(new RightAutoRoutine(controllers));
 		
 	} 
 	
@@ -39,7 +45,9 @@ public class AutoSelector {
 		autoChooser.addObject("Pass Auto Line and back (Drive 100)", 2);
 		autoChooser.addObject("Turn 90 degrees", 3);
 		autoChooser.addObject("Custom Routine (check preferences)", 4);
-		
+		autoChooser.addObject("Left Auto Routine", 5);
+		autoChooser.addObject("Center Auto Routine", 6);
+		autoChooser.addObject("Right Auto Routine", 7);
 
 		SmartDashboard.putData("Autonomous: ", autoChooser);
 	}
