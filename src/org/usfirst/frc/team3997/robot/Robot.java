@@ -1,5 +1,10 @@
 package org.usfirst.frc.team3997.robot;
 
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Point3;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team3997.robot.auto.Auto;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutineRunner;
 import org.usfirst.frc.team3997.robot.auto.actions.Action;
@@ -13,6 +18,11 @@ import org.usfirst.frc.team3997.robot.feed.DashboardLogger;
 import org.usfirst.frc.team3997.robot.hardware.ControlBoard;
 import org.usfirst.frc.team3997.robot.hardware.RemoteControl;
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
@@ -81,23 +91,26 @@ public class Robot extends IterativeRobot {
 		currTimeSec = 0.0;
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
-		/*new Thread(() -> {
+		new Thread(() -> {
             UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
             camera.setResolution(640, 480);
             
             CvSink cvSink = CameraServer.getInstance().getVideo();
             CvSource outputStream = CameraServer.getInstance().putVideo("Line", 640, 480);
             
+            Mat source = new Mat();
             Mat output = new Mat();
             
             while(!Thread.interrupted()) {
                 cvSink.grabFrame(output);
                 int thickness = 2;
+                Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+
                 Imgproc.line(output, new Point((output.size().width / 2), 0), new Point((output.size().width / 2), (output.size().height)), new Scalar(0, 0, 0), thickness);
                 outputStream.putFrame(output);
             }
-        }).start();*/
-
+        }).start();
+		
 	}
 
 	/**
@@ -173,6 +186,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+
+
 		input.updateInput();
 
 	}

@@ -17,6 +17,22 @@ public class VisionController {
 		SmartDashboard.putBoolean("VISION_isProcessing", is_enabled);
 		//left_contour = SmartDashboard.getNumber("VISION_leftContour", 0.0);
 		//right_contour = SmartDashboard.getNumber("VISION_rightContour", 0.0);
+	
+	}
+	//from 0-1
+	public double score(double AreaTargetScore, double AreaCurrentScore) {
+		double productCoefficient = (1/(1/AreaTargetScore))*100;
+		//from 0-100 Could be greater than 100 though that's why we need to convert
+		double rawScore = AreaCurrentScore*productCoefficient;
+		//from 0-1
+		double convertedScore;
+		if(rawScore <= 100) {
+			convertedScore = rawScore/100;
+			return convertedScore;
+		} else {
+			convertedScore = 100/rawScore;
+			return convertedScore;
+		}
 	}
 	
 	public void enable() {
