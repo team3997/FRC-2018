@@ -15,23 +15,18 @@ public class Params {
 	public static double X_ARCADE_DRIVE_LEFT_RIGHT = 6.25;
 	public static double X_ARCADE_DRIVE_STRAIGHT = 6.25;
 	public static double MAX_SPEED = DashboardVariables.max_speed;
+
 	public static final double HARDSET_DRIVE_SPEED_MAX = MAX_SPEED;
 
 	public static final double CLIMBER_HARDSET_MOTOR_SPEED = 1.0;
 
 	// ARM PARAMS
-	public static final double ARM_FEED_SETPOINT = 0.0;
-	public static final double ARM_SWITCH_SETPOINT = 0.75;
-	public static final double ARM_SCALE_SETPOINT = 0.35; // 0.575
-	public static final double ARM_CLIMB_SETPOINT = 0.4;
+	public static final double ARM_FEED_SETPOINT = DashboardVariables.SCALE_ARM_ANGLE;
+	public static final double ARM_SWITCH_SETPOINT 	= DashboardVariables.SWITCH_ARM_ANGLE;
+	public static final double ARM_SCALE_SETPOINT = DashboardVariables.SCALE_ARM_ANGLE; // 0.575
+	public static final double ARM_CLIMB_SETPOINT = DashboardVariables.CLIMB_ARM_ANGLE;
+	public static final double ARM_REST_SETPOINT = DashboardVariables.FEED_ARM_ANGLE; 
 
-	public static final double GEAR_POT_MAX_DOWN_UP[] = { 0.56, 0.45 };
-	public static final double GEAR_POT_UP_POSITION = 0.425;
-	public static final double GEAR_POT_RAMP_POSITION = 0.399;
-	public static final double GEAR_POT_FORCE_DOWN_THRESHOLD = 0.464;
-	public static final double GEAR_POT_FORCE_DOWN_SPEED = 0.15;
-
-	public static final double GEAR_POT_FORCE_REST_THRESHOLD = 0.396;
 
 	// DRIVE PID PARAMS
 
@@ -69,18 +64,18 @@ public class Params {
 	public static final double drive_d = 0.05;
 
 	// [NEW_DRIVE_PID]
-	public static final double new_drive_p = DashboardVariables.DRIVE_P;
-	public static final double new_drive_i = DashboardVariables.DRIVE_I;
-	public static final double new_drive_d = DashboardVariables.DRIVE_D;
+	public static double new_drive_p = DashboardVariables.DRIVE_P;
+	public static double new_drive_i = DashboardVariables.DRIVE_I;
+	public static double new_drive_d = DashboardVariables.DRIVE_D;
 
 	// [ARM_PID]
-	public static final double gear_p = DashboardVariables.GEAR_P;
-	public static final double gear_i = DashboardVariables.GEAR_I;
-	public static final double gear_d = DashboardVariables.GEAR_D;
+	public static double arm_p = DashboardVariables.ARM_P;
+	public static double arm_i = DashboardVariables.ARM_I;
+	public static double arm_d = DashboardVariables.ARM_D;
+	public static double arm_f = DashboardVariables.ARM_F;
 
-	public static final double gear_ramp_p = DashboardVariables.GEAR_RAMP_P;
-	public static final double gear_ramp_i = DashboardVariables.GEAR_RAMP_I;
-	public static final double gear_ramp_d = DashboardVariables.GEAR_RAMP_D;
+	
+	
 
 	// [GEAR_DOWN_PID]
 	public static final double gear_down_p = 0.0;

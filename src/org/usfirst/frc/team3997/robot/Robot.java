@@ -9,6 +9,7 @@ import org.usfirst.frc.team3997.robot.auto.Auto;
 import org.usfirst.frc.team3997.robot.auto.AutoRoutineRunner;
 import org.usfirst.frc.team3997.robot.auto.actions.Action;
 import org.usfirst.frc.team3997.robot.auto.actions.DriveIntervalAction;
+import org.usfirst.frc.team3997.robot.controllers.ArmController;
 import org.usfirst.frc.team3997.robot.controllers.DriveController;
 import org.usfirst.frc.team3997.robot.controllers.LightController;
 import org.usfirst.frc.team3997.robot.controllers.MotionController;
@@ -46,6 +47,8 @@ public class Robot extends IterativeRobot {
 	DriveController driveController;
 	VisionController visionController;
 	LightController lights;
+	ArmController armController;
+	
 	DashboardLogger dashboardLogger;
 	DashboardInput input;
 
@@ -70,9 +73,10 @@ public class Robot extends IterativeRobot {
 		dashboardLogger = new DashboardLogger(robot, humanControl);
 		input = new DashboardInput();
 		motion = new MotionController(robot);
+		armController = new ArmController(robot, humanControl);
 		
 		masterController = new MasterController(driveController, robot, motion, visionController,
-				lights);
+				lights, armController);
 		auto = new Auto(masterController);
 		timer = new Timer();
 		
@@ -158,6 +162,8 @@ public class Robot extends IterativeRobot {
 		robot.resetEncoders();
 		driveController.reset();
 		visionController.enable();
+		armController.reset();
+		
 		currTimeSec = 0.0;
 		lastTimeSec = 0.0;
 		deltaTimeSec = 0.0;
@@ -176,6 +182,8 @@ public class Robot extends IterativeRobot {
 		deltaTimeSec = currTimeSec - lastTimeSec;
 		humanControl.readControls();
 		driveController.update(currTimeSec, deltaTimeSec);
+		armController.update();
+		
 		visionController.disable();
 		lights.setEnabledLights();
 
