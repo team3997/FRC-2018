@@ -1,0 +1,67 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+#Uncomment .jar to allow gradle build to pass
+#*.jar
+*.class
+######################
+# Gradle build files
+######################
+build/
+.gradle/
+
+######################
+# Eclipse
+######################
+Debug/ 
+Debug/*
+*.pydevproject
+.metadata
+#.project
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+#.classpath
+sysProps.xml
+.classpath
+.cproject
+build.properties
+build.xml
+.project
+.settings/
+.loadpath
+/src/main/resources/rebel.xml
+# External tool builders
+.externalToolBuilders/
+/Debug/
