@@ -3,7 +3,6 @@ package org.usfirst.frc.team3997.robot.controllers;
 import java.io.File;
 
 import org.usfirst.frc.team3997.robot.Params;
-import org.usfirst.frc.team3997.robot.hardware.MPU9250Gyro;
 import org.usfirst.frc.team3997.robot.hardware.RobotModel;
 
 import jaci.pathfinder.*;
