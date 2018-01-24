@@ -23,6 +23,8 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
@@ -50,7 +52,7 @@ public class Robot extends IterativeRobot {
 	DashboardInput input;
 
 	MotionController motion;
-
+	I2C i2c;
 	MasterController masterController;
 	Auto auto;
 	Timer timer;
@@ -62,11 +64,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		i2c = new I2C(Port.kOnboard, Params.ARDUINO);
 		robot = new RobotModel();
 		humanControl = new ControlBoard();
 		driveController = new DriveController(robot, humanControl);
 		visionController = new VisionController();
-		lights = new LightController();
+		lights = new LightController(i2c);
 		dashboardLogger = new DashboardLogger(robot, humanControl);
 		input = new DashboardInput();
 		motion = new MotionController(robot);
@@ -77,7 +80,7 @@ public class Robot extends IterativeRobot {
 		timer = new Timer();
 		
 		
-		lights.setEnabledLights();
+		lights.setLights(LightController.EnabledLights);
 		auto.reset();
 		auto.listOptions();
 
@@ -143,7 +146,7 @@ public class Robot extends IterativeRobot {
 		robot.updateGyro();
 		SmartDashboard.putNumber("gyro", robot.getAngle());
 		visionController.update();
-		lights.setAutoLights();
+		lights.setLights(LightController.AutoLights);
 		dashboardLogger.updateData();
 	}
 
@@ -177,7 +180,7 @@ public class Robot extends IterativeRobot {
 		humanControl.readControls();
 		driveController.update(currTimeSec, deltaTimeSec);
 		visionController.disable();
-		lights.setEnabledLights();
+		lights.setLights(LightController.EnabledLights);
 
 	}
 
@@ -221,7 +224,7 @@ public class Robot extends IterativeRobot {
 			Params.USE_ARCADE_DRIVE = false;
 		}
 
-		lights.setDisabledLights();
+		lights.setLights(LightController.DisabledLights);
 	}
 
 }

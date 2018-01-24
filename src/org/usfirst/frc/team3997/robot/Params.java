@@ -16,7 +16,8 @@ public class Params {
 	public static double X_ARCADE_DRIVE_STRAIGHT = 6.25;
 	public static double MAX_SPEED = DashboardVariables.max_speed;
 	public static final double HARDSET_DRIVE_SPEED_MAX = MAX_SPEED;
-
+	//TODO get arduino address
+	public static final int ARDUINO = 0;
 	public static final double CLIMBER_HARDSET_MOTOR_SPEED = 1.0;
 
 	// GEAR HOLDER PARAMS
