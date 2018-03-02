@@ -1,9 +1,9 @@
 package org.usfirst.frc.team3997.robot.hardware;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 
-import org.opencv.features2d.Params;
 import org.usfirst.frc.team3997.robot.hardware.Ports;
 
 public class RobotModel {
